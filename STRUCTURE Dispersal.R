@@ -426,8 +426,8 @@ wilcox.test(PopAssignPic$probancestry[PopAssignPic$nataldisp == TRUE], PopAssign
 
 # Export results
 dir.create("Tables")
-write.table(PopAssignPic, "Tables/MigrantFathersPic.txt", col.names = TRUE, row.names = FALSE,
-            quote = FALSE)
+# write.table(PopAssignPic, "Tables/MigrantFathersPic.txt", col.names = TRUE, row.names = FALSE,
+#             quote = FALSE)
 PopAssignPic = read.table("Tables/MigrantFathersPic.txt", header = TRUE)
 
 
@@ -550,8 +550,8 @@ wilcox.test(PopAssignThu$probancestry[PopAssignThu$nataldisp == TRUE], PopAssign
 # More power to detect migrants
 
 # Export results
-write.table(PopAssignThu, "Tables/MigrantFathersThu.txt", col.names = TRUE, row.names = FALSE,
-            quote = FALSE)
+# write.table(PopAssignThu, "Tables/MigrantFathersThu.txt", col.names = TRUE, row.names = FALSE,
+#             quote = FALSE)
 PopAssignThu = read.table("Tables/MigrantFathersThu.txt", header = TRUE)
 
 

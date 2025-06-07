@@ -16,7 +16,6 @@ rm(list=ls(all=TRUE))
 # Check if packages are installed, install if necessary
 source("Sources/packages.R")
 
-install_version("adegenet")
 
 #==========================================================#
 # Picardy ----
@@ -203,6 +202,9 @@ mean.dispersal
 
 allel=read.table("Data/Thu/uniqueGenotypesWithInfo.txt",h=T)
 allel$idcol = as.factor(allel$idcol)
+
+
+allel = allel[allel$idcol != "Thu42",]
 
 # enlever les males (femelles sont liees a la colonie beaucoup plus que les males)
 allel=allel[-which(allel$sexe=="M"),]

@@ -26,8 +26,8 @@ source("Sources/packages.R")
 # Import data
 #---------------------------------
 # Need the distancesDist.txt output file as dataset
-distPic = read.table("AssignationPic/outputs/distancesDistPic_gametic.txt", header = TRUE)
-distThu = read.table("AssignationThu/outputs/distancesDistThu_gametic.txt", header = TRUE)
+distPic = read.table("Data/Pic/distancesDistPic_gametic.txt", header = TRUE)
+distThu = read.table("Data/Thu/distancesDistThu_gametic.txt", header = TRUE)
 
 #=================================#
 # DISTRIBUTION CHOICE

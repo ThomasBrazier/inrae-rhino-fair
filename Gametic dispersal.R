@@ -110,7 +110,7 @@ dyadsObs$distance
 #   EXPORT NEW DATA TO GRAPH
 #----------------------------------------------------------#
 # Run observed distribution with a threshold of 0.3
-write.table(dyadsObs,"AssignationPic/dyadsObsSelect_gametic.txt",col.names=TRUE,row.names=FALSE)
+# write.table(dyadsObs,"AssignationPic/dyadsObsSelect_gametic.txt",col.names=TRUE,row.names=FALSE)
 dyadsObs = read.table("AssignationPic/dyadsObsSelect_gametic.txt", header = TRUE)
 
 #----------------------------------------------------------#
@@ -280,8 +280,8 @@ dyadsObs$distance
 #   EXPORT NEW DATA TO GRAPH
 #-------------------------------
 # Run observed distribution with a threshold of 0.3
-write.table(dyadsObs,"AssignationThu/dyadsObsSelect_gametic.txt",
-            col.names=TRUE,row.names=FALSE)
+# write.table(dyadsObs,"AssignationThu/dyadsObsSelect_gametic.txt",
+#             col.names=TRUE,row.names=FALSE)
 dyadsObs = read.table("AssignationThu/dyadsObsSelect_gametic.txt", header = TRUE)
 
 #-------------------------------#

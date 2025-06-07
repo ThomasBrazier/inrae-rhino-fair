@@ -23,7 +23,11 @@ source("../Sources/packages.R")
 # and manual install of older versions can fail
 # Hence the difficutly to re-run the analysis from the beginning
 #
-# Uncomment the MasterBayes commands if you want to re-run
+# All the commands, formulas and hyperparameters necessary top re-run MasterBayes are commmented and tabulated.
+# Moreover, the models inferred with MasterBayes are saved in `MasterBayes\` and can be loaded and interpreted in `MasterBayes\MasterBayes.R`.
+
+
+# Uncomment the MasterBayes commands if you want to re-run from scratch
 # but you will have to find a solution to install MasterBayes
 #
 #----------------------------------#

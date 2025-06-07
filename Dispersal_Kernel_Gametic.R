@@ -7,22 +7,15 @@
 
 # clear global environment: remove all variables
 rm(list=ls(all=TRUE))
-
-#----------------------
-# Loading packages
-# SYSTEM
-library(rstudioapi)
-library(ggplot2)
-require(ggpubr)
-library(fitdistrplus)
-library(moments)
-
-#----------------------
-# Loading variables & objects
-
+# library(rstudioapi)
 # Get the directory of the file & set working directory
-filedir=dirname(rstudioapi::getSourceEditorContext()$path)
-setwd(filedir)
+# filedir=dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(filedir)
+
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("Sources/packages.R")
 
 
 

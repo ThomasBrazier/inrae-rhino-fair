@@ -78,6 +78,55 @@ sum(lapply(subsample, length) > 2)/length(subsample)
 # 5.5% of juveniles sampled multiple times were in more than one colony
 
 
+
+
+#===============================#
+#            NATAL DISPERSAL
+#===============================#
+dataPic = read.table("Data/Pic/uniqueGenotypesWithInfo.txt", header = TRUE)
+dataThu = read.table("Data/Thu/uniqueGenotypesWithInfo.txt", header = TRUE)
+
+# Where are juveniles sampled in next years?
+# If only one colony sampled multiple times -> no natal dispersal
+# If more than one colony sampled -> natal dispersal
+# We can make the ratio, i.e. the natal dispersal rate
+dataPic$idcol[dataPic$ageWhenFirstCaptur == "Juv" & dataPic$sexe == "M"]
+
+apply(dataPic[dataPic$ageWhenFirstCaptur == "Juv" & dataPic$sexe == "M", 22:29], 1, function(x) length(x[!is.na(x)]))
+(ntimesampled = sum(apply(dataPic[dataPic$ageWhenFirstCaptur == "Juv" & dataPic$sexe == "M", 22:29], 1, function(x) length(x[!is.na(x)])) > 1))
+# 307 juveniles have been sampled more than one time
+# involving 56 males
+
+sapply(apply(dataPic[dataPic$ageWhenFirstCaptur == "Juv" & dataPic$sexe == "M", 22:29], 1, function(x) unique(x[!is.na(x)])), length)
+(ncolsampled = sum(sapply(apply(dataPic[dataPic$ageWhenFirstCaptur == "Juv" & dataPic$sexe == "M", 22:29], 1, function(x) unique(x[!is.na(x)])), length) > 1))
+# 18 juveniles have been sampled in more than one colony
+# involving 2 males
+
+(nataldisprate = ncolsampled/ntimesampled)
+# Natal dispersal rate in Picardy is very low = 0.0586
+# For male only, natal dispersal rate = 0.036
+
+
+
+
+dataThu$idcol[dataThu$ageWhenFirstCaptur == "Juv" & dataThu$sexe == "M"]
+
+apply(dataThu[dataThu$ageWhenFirstCaptur == "Juv" & dataThu$sexe == "M", 22:27], 1, function(x) length(x[!is.na(x)]))
+(ntimesampled = sum(apply(dataThu[dataThu$ageWhenFirstCaptur == "Juv" & dataThu$sexe == "M", 22:27], 1, function(x) length(x[!is.na(x)])) > 1))
+# 475 juveniles have been sampled more than one time
+# involving 146 males
+
+sapply(apply(dataThu[dataThu$ageWhenFirstCaptur == "Juv" & dataThu$sexe == "M", 22:27], 1, function(x) unique(x[!is.na(x)])), length)
+(ncolsampled = sum(sapply(apply(dataThu[dataThu$ageWhenFirstCaptur == "Juv" & dataThu$sexe == "M", 22:27], 1, function(x) unique(x[!is.na(x)])), length) > 1))
+# 16 juveniles have been sampled in more than one colony
+# 8 males
+
+(nataldisprate = ncolsampled/ntimesampled)
+# Natal dispersal rate in Thuringia is even lower = 0.0337
+# For males, natal dispersal rate = 0.055
+
+
+
 #------------------------------------------------#
 # END
 #------------------------------------------------#
