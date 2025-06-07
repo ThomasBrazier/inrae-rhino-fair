@@ -1,0 +1,773 @@
+##########################################################################
+###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+#========================================================================#
+#			PARAMETERIZING STRUCTURE
+#========================================================================#
+###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###
+##########################################################################
+#!# Starting Values for Lambda
+##########################################################################
+# will re-genotype population 'S20' 
+	# a true/pure population with few missing data
+		# following manual, will infer 'lambda' under a K=1 model
+#------------------------------------------------------------------------#
+# Symbolic Links
+#------------------------------------------------------------------------#
+mkdir S20
+cd S20
+ln -s /home/smccairns/work/estimates_denovo/m8_M3_n5_maxlocus3/*.tags.tsv.gz .
+ln -s /home/smccairns/work/estimates_denovo/m8_M3_n5_maxlocus3/*.snps.tsv.gz .
+ln -s /home/smccairns/work/estimates_denovo/m8_M3_n5_maxlocus3/*.alleles.tsv.gz .
+ln -s /home/smccairns/work/estimates_denovo/m8_M3_n5_maxlocus3/*.matches.tsv.gz .
+cd ..
+
+grep 'S20' popmap > S20inds
+
+head -n 1 ./S20/S20.stru | tr "[:space:]" '\n' | sed '1,2d' | wc -l
+
+#========================================================================#
+# Loop to Extract Posterior Estimates & Write to Dataframe
+#------------------------------------------------------------------------#
+#!#!#! N.B. the names of standard output files will vary with each Structure run
+	# e.g. mainparams.test2.k5rep1.sh.o2146918
+		# 'mainparms.' will be standard (given PERL script)
+		# 'test2' will vary depending on how the paramter set is named
+		# 'k' & 'rep' will be semi-standard
+			# integers will vary based on the number of 'k' defined in paramter set & the number of replicates defined in the PERL script
+		# '.sh.o' will be standard
+			# trailing number is generated randomly in the PERL script
+#------------------------------------------------------------------------#
+# Alpha -- full chain
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ) | paste - - - > trace_alpha
+k=1
+for r in $(seq 3)
+do
+  grep -A 11 ' Rep#:    Alpha' mainparams.lambda.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep '[[:blank:]$]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'};  {print k, r, $2}' >> trace_alpha
+done
+
+#------------------------------------------------------------------------#
+# Sampling Chain -- posterior estimates after burn-in
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ; echo Ln.Lik ) | paste - - - - > trace_lambda
+k=1
+for r in $(seq 3)
+do
+  grep -A 11 ' Rep#:    Alpha      Ln Like  Est Ln P(D)' mainparams.lambda.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha      Ln Like  Est Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'};  {print k, r, $2, $3}' >> trace_lambda
+  grep 'Mean value of lambda' mainparams.lambda.k${k}rep${r}.sh.o* | awk -F "= " '{print $2}' >> lambda_est
+done
+
+#------------------------------------------------------------------------#
+#!#!#! PROBLEM!!!
+	# even with a burn-in of 1,000,000 iterations alpha is not converging
+	# HOWEVER, the mean estimate of lambda is consistant (0.59)
+		# will set lambda to 0.59 and re-run to see if this improves convegence
+( echo k ; echo Rep ; echo Alpha ; echo Ln.Lik ) | paste - - - - > trace_lambda
+k=1
+for r in $(seq 3)
+do
+  grep -A 11 ' Rep#:    Alpha      Ln Like  Est Ln P(D)' mainparams.lambda.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha      Ln Like  Est Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'};  {print k, r, $2, $3}' >> trace_lambda
+done
+
+##########################################################################
+#!# Alpha Convergence Strategies
+##########################################################################
+# general parameter settings:
+	# lambda: 0.59
+	# LOCPRIOR
+	# corelated allele frequencies
+#========================================================================#
+# Alpha as a Gamma Prior
+#------------------------------------------------------------------------#
+# do this by turning-off the 'UNIFPRIORALPHA' Boolean
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ) | paste - - - > trace_alpha
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+    grep -A 11 ' Rep#:    Alpha' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep '[[:blank:]$]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'};  {print k, r, $2}' >> trace_alpha
+  done
+done
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ; echo r ; echo Ln.Lik ; echo F1 ; echo F2 ; echo F3  ; echo F4  ; echo F5  ; echo F6  ; echo F7  ) | paste - - - - - - - - - - - - > trace_SamplingChain
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, na, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, $8, na }' >> trace_SamplingChain
+    else
+      grep -A 11 'Ln P(D)' mainparams.alpha-Gamma_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, $8, $9 }' >> trace_SamplingChain
+  fi
+  done
+done
+
+#========================================================================#
+# Alpha as a Uniform Prior (single value of alpha inferred)
+#------------------------------------------------------------------------#
+# increase paramter space to explore
+	# ALPHAMAX 30 (3X greater than default)
+	# ALPHAPROPSD 0.25 (10X greater than default)
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ) | paste - - - > trace_alpha
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+    grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep '[[:blank:]$]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'};  {print k, r, $2}' >> trace_alpha
+  done
+done
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha ; echo r ; echo Ln.Lik ; echo F1 ; echo F2 ; echo F3  ; echo F4  ; echo F5  ; echo F6  ; echo F7  ) | paste - - - - - - - - - - - - > trace_SamplingChain
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, na, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, $8, na }' >> trace_SamplingChain
+    else
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $(3+k), $(4+k), $3, $4, $5, $6, $7, $8, $9 }' >> trace_SamplingChain
+  fi
+  done
+done
+
+#------------------------------------------------------------------------#
+# Separate Alpha for Each Population?
+	# given high probability of human induced admixture (aquaculture transfers), this may be necessary
+#------------------------------------------------------------------------#
+mkdir alpha_unif_max30sd0.25_indep
+mkdir alpha_unif_max30sd0.25_indep/rundir
+mkdir alpha_unif_max30sd0.25_indep/Results
+mkdir alpha_unif_max30sd0.25_indep/PlotData
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha1 ; echo Alpha2 ; echo Alpha3  ; echo Alpha4  ; echo Alpha5  ; echo Alpha6  ; echo Alpha7  ) | paste - - - - - - - - - > trace_alpha
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, na, na, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, na, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, na, na, na }' >> trace_alpha
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, na, na }' >> trace_alpha
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, $7, na }' >> trace_alpha
+    else
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, $7, $8 }' >> trace_alpha
+  fi
+  done
+done
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo r ; echo Ln.Lik ; echo Alpha1 ; echo Alpha2 ; echo Alpha3  ; echo Alpha4  ; echo Alpha5  ; echo Alpha6 ; echo Alpha7 ; \ 
+	echo F1 ; echo F2 ; echo F3  ; echo F4  ; echo F5  ; echo F6  ; echo F7 ) | paste - - - - - - - - - - - - - - - - - - > trace_SamplingChain
+for k in $(seq 7)
+do
+  for r in $(seq 5)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, na, na, na, na, na, na, $3, na, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, na, na, na, na, na, $4, $5, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, na, na, na, na, $5, $6, $7, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, na, na, na, $6, $7, $8, $9, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, na, na, $7, $8, $9, $10, $11, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, $7, na, $8, $9, $10, $11, $12, $13, na }' >> trace_SamplingChain
+    else
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max30-sd0.25-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15 }' >> trace_SamplingChain
+  fi
+  done
+done
+
+#------------------------------------------------------------------------#
+# Expanded Alpha
+#------------------------------------------------------------------------#
+# increase paramter space even further
+	# ALPHAMAX 50 (5X greater than default)
+	# ALPHAPROPSD 0.5 (20X greater than default)
+# recall general parameter settings:
+	# lambda: 0.59
+	# LOCPRIOR
+	# corelated allele frequencies
+#------------------------------------------------------------------------#
+mkdir alpha_unif_max50sd0.5_indep
+mkdir alpha_unif_max50sd0.5_indep/rundir
+mkdir alpha_unif_max50sd0.5_indep/Results
+mkdir alpha_unif_max50sd0.5_indep/PlotData
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo Alpha1 ; echo Alpha2 ; echo Alpha3  ; echo Alpha4  ; echo Alpha5  ; echo Alpha6  ; echo Alpha7  ) | paste - - - - - - - - - > trace_alpha
+for k in $(seq 7)
+do
+  for r in $(seq 10)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, na, na, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, na, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, na, na, na, na }' >> trace_alpha
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, na, na, na }' >> trace_alpha
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, na, na }' >> trace_alpha
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, $7, na }' >> trace_alpha
+    else
+      grep -A 11 ' Rep#:    Alpha' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v ' Rep#:    Alpha' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  {print k, r, $2, $3, $4, $5, $6, $7, $8 }' >> trace_alpha
+  fi
+  done
+done
+
+#------------------------------------------------------------------------#
+( echo k ; echo Rep ; echo r ; echo Ln.Lik ; echo Alpha1 ; echo Alpha2 ; echo Alpha3  ; echo Alpha4  ; echo Alpha5  ; echo Alpha6 ; echo Alpha7 ; \ 
+	echo F1 ; echo F2 ; echo F3  ; echo F4  ; echo F5  ; echo F6  ; echo F7 ) | paste - - - - - - - - - - - - - - - - - - > trace_SamplingChain
+for k in $(seq 7)
+do
+  for r in $(seq 10)
+  do
+  if [ $k -eq 1 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, na, na, na, na, na, na, $3, na, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 2 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, na, na, na, na, na, $4, $5, na, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 3 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, na, na, na, na, $5, $6, $7, na, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 4 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, na, na, na, $6, $7, $8, $9, na, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 5 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, na, na, $7, $8, $9, $10, $11, na, na }' >> trace_SamplingChain
+  elif [ $k -eq 6 ]
+    then
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, $7, na, $8, $9, $10, $11, $12, $13, na }' >> trace_SamplingChain
+    else
+      grep -A 11 'Ln P(D)' mainparams.alpha-unif-max50-sd0.5-indep_freq-cor.k${k}rep${r}.sh.o* | grep -v 'Ln P(D)' \
+	| grep '[^[:blank:]]' | grep -v '^-' | awk 'BEGIN {OFS="\t"; k='$k'; r='$r'; na="NA" };  \
+	{print k, r, $(2+2*k), $(3+2*k), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15 }' >> trace_SamplingChain
+  fi
+  done
+done
+
+
+##########################################################################
+#!# CLUMPP
+##########################################################################
+
+
+
+##############################################################################################################################################################################################################
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+#											EXPORT TO R
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+##############################################################################################################################################################################################################
+setwd("C:/Users/mccairns/Documents/Prelim/Stacks (de novo)/Parameter Tests/Final Estimates/StructureOptimization/alpha(Gamma)_lambda(0.59)_corfreq")
+alpha<-read.table("trace_alpha", header=T)
+trace.files<-read.table("trace_SamplingChain", header=T)
+
+#------------------------------------------------------------------------#
+setwd("C:/Users/mccairns/Documents/Prelim/Stacks (de novo)/Parameter Tests/Final Estimates/StructureOptimization/alpha(unif_max30_sd0.25)_lambda(0.59)_corfreq")
+alpha<-read.table("trace_alpha", header=T)
+trace.files<-read.table("trace_SamplingChain", header=T)
+
+#------------------------------------------------------------------------#
+setwd("C:/Users/mccairns/Documents/Prelim/Stacks (de novo)/Parameter Tests/Final Estimates/StructureOptimization/alpha(unif_max30_sd0.25_indep)_lambda(0.59)_corfreq")
+alpha<-read.table("trace_alpha", header=T)
+trace.files<-read.table("trace_SamplingChain", header=T)
+
+#------------------------------------------------------------------------#
+setwd("C:/Users/mccairns/Documents/Prelim/Stacks (de novo)/Parameter Tests/Final Estimates/StructureOptimization/alpha(unif_max50_sd0.5_indep)_lambda(0.59)_corfreq")
+alpha<-read.table("trace_alpha", header=T)
+trace.files<-read.table("trace_SamplingChain", header=T)
+
+##########################################################################
+#!# Checking Convergence Visually
+##########################################################################
+library(MCMCglmm)
+
+#========================================================================#
+# Alpha -- full chain
+#------------------------------------------------------------------------#
+traceplot(as.mcmc(subset(alpha, k==1 & Rep==1)$Alpha))
+
+#------------------------------------------------------------------------#
+g=1
+test.list<-list()
+for (r in 1:5)
+{ test.list[[r]]<-as.mcmc(subset(alpha, k==g & Rep==r)$Alpha) }
+rm(g)
+rm(r)
+traceplot(test.list, col=1:5, ylab="Alpha")
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+
+#------------------------------------------------------------------------#
+g=5
+a="Alpha1"
+test.list<-list()
+for (r in 1:10)
+{ test.list[[r]]<-as.mcmc(subset(alpha, k==g & Rep==r)[,a]) }
+rm(g)
+rm(r)
+traceplot(test.list, col=1:10, ylab=a)
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:10, col=1:10, pch=15)
+
+# just the sampling chain
+traceplot(test.list, col=1:10, ylab=a, xlim=c(1000001, 1100000))
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:10, col=1:10, pch=15)
+
+rm(test.list)
+rm(a)
+
+#========================================================================#
+# Sampling Chains -- estimates after burn-in
+#------------------------------------------------------------------------#
+# Alpha
+#------------------------------------------------------------------------#
+traceplot(as.mcmc(subset(trace.files, k==1 & Rep==1)$Alpha))
+
+#------------------------------------------------------------------------#
+g=5
+test.list<-list()
+for (i in 1:5)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)$Alpha) }
+rm(g)
+rm(i)
+traceplot(test.list, col=1:5, ylab="Alpha")
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+
+#------------------------------------------------------------------------#
+g=5
+a="Alpha5"
+test.list<-list()
+for (i in 1:5)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)[,a]) }
+traceplot(test.list, col=1:5, ylab=a)
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+rm(a)
+rm(g)
+rm(i)
+
+#------------------------------------------------------------------------#
+g=5
+a="Alpha5"
+test.list<-list()
+for (i in 1:10)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)[,a]) }
+traceplot(test.list, col=1:10, ylab=a)
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:10, col=1:10, pch=15)
+rm(a)
+rm(g)
+rm(i)
+
+rm(test.list)
+
+#------------------------------------------------------------------------#
+# Ln Likelihood
+#------------------------------------------------------------------------#
+traceplot(as.mcmc(subset(trace.files, k==1 & Rep==1)$Ln.Lik))
+
+#------------------------------------------------------------------------#
+g=5
+test.list<-list()
+for (i in 1:5)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)$Ln.Lik) }
+rm(g)
+rm(i)
+traceplot(test.list, col=1:5, ylab="Ln Likelihood")
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+
+#------------------------------------------------------------------------#
+g=10
+test.list<-list()
+for (i in 1:10)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)$Ln.Lik) }
+rm(g)
+rm(i)
+traceplot(test.list, col=1:10, ylab="Ln Likelihood")
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:10, col=1:10, pch=15)
+rm(test.list)
+
+#------------------------------------------------------------------------#
+# Fs
+#------------------------------------------------------------------------#
+traceplot(as.mcmc(subset(trace.files, k==1 & Rep==1)$F1))
+
+#------------------------------------------------------------------------#
+f="F1"
+g=5
+test.list<-list()
+for (i in 1:5)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)[,f]) }
+rm(g)
+rm(i)
+traceplot(test.list, col=1:5, ylab=f)
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+rm(f)
+
+#------------------------------------------------------------------------#
+# r
+#------------------------------------------------------------------------#
+traceplot(as.mcmc(subset(trace.files, k==1 & Rep==1)$r))
+
+#------------------------------------------------------------------------#
+g=5
+test.list<-list()
+for (i in 1:5)
+{ test.list[[i]]<-as.mcmc(subset(trace.files, k==g & Rep==i)$r) }
+rm(g)
+rm(i)
+traceplot(test.list, col=1:5, ylab="r")
+legend(xpd=NA, x="topleft", horiz=T, bty="n", legend=1:5, col=1:5, pch=15)
+rm(test.list)
+
+##########################################################################
+#!# Testing Within Chain Convergence & Stability
+##########################################################################
+
+#========================================================================#
+# Geweke Diagnostic of MC Chain Stability
+#------------------------------------------------------------------------#
+# if the whole chain is stationary, the means of the values early and late in the sequence should be similar
+	# convergence diagnostic 'Z' is the difference between the 2 means divided by the asymptotic standard error of their difference
+		# values of 'Z' near the extreme tails of the N(0,1) indicates lack of convergence
+		# can also estimate p-value of 'Z' from the normal distribution
+			# yields the probability that the divided chain means are different
+#------------------------------------------------------------------------#
+# Alpha
+#------------------------------------------------------------------------#
+g=1
+r=1
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.1, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.1, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.1, frac2=0.5, nbins=100)
+
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.25, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.25, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.25, frac2=0.5, nbins=100)
+
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.5, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.5, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), frac1=0.5, frac2=0.5, nbins=100)
+rm(g)
+rm(r)
+
+#------------------------------------------------------------------------#
+# Ln Likelihood
+#------------------------------------------------------------------------#
+g=1
+r=1
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.1, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.1, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.1, frac2=0.5, nbins=100)
+
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.25, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.25, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.25, frac2=0.5, nbins=100)
+
+geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.5, frac2=0.5)
+2*pnorm(-abs(geweke.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.5, frac2=0.5)$z))
+geweke.plot(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), frac1=0.5, frac2=0.5, nbins=100)
+rm(g)
+rm(r)
+
+#========================================================================#
+# Heidelberger and Welch’s Convergence Diagnostic
+#------------------------------------------------------------------------#
+# probability of rejecting hypothesis that Markov Chain is a stable/stationary distribution
+	# if Halfwidth test fails, chain should be extended
+#------------------------------------------------------------------------#
+# Alpha
+#------------------------------------------------------------------------#
+g=1
+r=1
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==1)$Alpha))
+rm(g)
+rm(r)
+
+#------------------------------------------------------------------------#
+g=1
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==1)$Alpha))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==2)$Alpha))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==3)$Alpha))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==4)$Alpha))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==5)$Alpha))
+rm(g)
+
+#------------------------------------------------------------------------#
+# Ln Likelihood
+#------------------------------------------------------------------------#
+g=1
+r=1
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==1)$Ln.Lik))
+rm(g)
+rm(r)
+
+#------------------------------------------------------------------------#
+g=4
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==1)$Ln.Lik))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==2)$Ln.Lik))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==3)$Ln.Lik))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==4)$Ln.Lik))
+heidel.diag(as.mcmc(subset(trace.files, k==g & Rep==5)$Ln.Lik))
+rm(g)
+
+#========================================================================#
+# Raftery and Lewis' Diagnostic
+#------------------------------------------------------------------------#
+# run length control diagnostic
+	# intended for use on a short pilot run of a Markov chain
+		# to estimate number of iterations required to estimate the quantile 'q' to within an accuracy of +/- 'r' with probability 'p'
+# only tests marginal convergence on each parameter
+	#!# high dependence factors (i.e. >5) are worrisome
+	 	# may indicate influential starting values, high correlations between coefficients, or poor mixing
+#------------------------------------------------------------------------#
+# Alpha
+#------------------------------------------------------------------------#
+g=1
+r=1
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"N"]
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"I"]
+rm(g)
+rm(r)
+
+#------------------------------------------------------------------------#
+# Ln Likelihood
+#------------------------------------------------------------------------#
+g=1
+r=1
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), q=0.025, r=0.005, s=0.95)
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), q=0.025, r=0.005, s=0.95)[[2]][,"N"]
+raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Ln.Lik), q=0.025, r=0.005, s=0.95)[[2]][,"I"]
+rm(g)
+rm(r)
+
+#------------------------------------------------------------------------#
+# Summarizing Run Length Inference
+#------------------------------------------------------------------------#
+g=1
+r=1
+chain.length<-data.frame(k=g, Rep=r,
+	Alpha.N=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"N"],
+	Alpha.DepFactor=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"I"])
+row.names(chain.length)<-NULL
+chain.length
+
+for (r in 2:5)
+{ temp.df<-data.frame(k=g, Rep=r,
+	Alpha.N=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"N"],
+	Alpha.DepFactor=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"I"])
+  row.names(temp.df)<-NULL
+  chain.length<-rbind(chain.length, temp.df)
+  rm(temp.df)
+}
+chain.length
+rm(g)
+rm(r)
+
+for (g in 2:7)
+{ for (r in 1:5)
+  { temp.df<-data.frame(k=g, Rep=r,
+	Alpha.N=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"N"],
+	Alpha.DepFactor=raftery.diag(as.mcmc(subset(trace.files, k==g & Rep==r)$Alpha), q=0.025, r=0.005, s=0.95)[[2]][,"I"])
+    row.names(temp.df)<-NULL
+    chain.length<-rbind(chain.length, temp.df)
+    rm(temp.df)
+  }
+  rm(r)
+}
+rm(g)
+chain.length
+summary(chain.length$Alpha.N)
+
+boxplot(Alpha.N~k, data=chain.length, xlab="k", ylab="Min. Chain Length Required for Convergence", log="y", ylim=c(20000,500000), cex.lab=1.5)
+
+##########################################################################
+#!# Testing Convergence Among Chains
+##########################################################################
+
+#========================================================================#
+# 
+#------------------------------------------------------------------------#
+
+# testing convergence among chains
+	#!# scaling factor should be less than 1.2
+		# values substantially greater than 1 indicate lack of convergence
+gelman.diag(mcmc.list(list(
+as.mcmc(subset(trace.files, k==1 & Rep==1)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==2)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==3)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==4)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==5)$Alpha))))
+
+gelman.plot(mcmc.list(list(
+as.mcmc(subset(trace.files, k==1 & Rep==1)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==2)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==3)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==4)$Alpha),
+as.mcmc(subset(trace.files, k==1 & Rep==5)$Alpha))), autoburnin=F)
+
+
+
+
+gelman.plot(as.mcmc(subset(trace.files, k==1 & Rep==1)$Ln.Lik))
+
+
+
+mh.draws<-as.mcmc(subset(trace.files, k==1 & Rep==1)$Alpha)
+summary(mh.draws)
+
+plot(mh.draws)
+
+# "guessing" appropriate burnin and chain length
+# only tests marginal convergence on each parameter
+ #!# high dependence factors (i.e. >5) are worrisome
+ 	# may indicate influential starting values, high correlations between coefficients, or poor mixing
+
+raftery.diag(mh.draws, q = 0.025, r = 0.005, s = 0.95)
+
+heidel.diag(mh.draws)
+autocorr.diag(mh.draws)
+
+rejectionRate(mh.draws)
+
+
+
+
+
+
+
+
+
+
+

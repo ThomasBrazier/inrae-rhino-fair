@@ -1,0 +1,28 @@
+Output file path & name : C:/ZSL/Colony/Simulation 
+Number of loci : 8 
+ Number of offspring in the sample : 4208 
+Outbreeding (0) or inbreeding (1) model : 0 
+Number of male candidates : 3840 
+Number of female candidates : 3840 
+Number of known paternal sibships : 0 
+Number of known maternal sibships : 0 
+Number of offspring with excluded fathers : 0 
+Number of offspring with excluded mothers : 0 
+Male mating system : Polygamy 
+Female mating system : Monogamy 
+Number of threads : 1 
+Number of Excluded Paternal Sibships : 0 
+Number of Excluded Maternal Sibships : 0 
+Dioecious (2) or monoecious (1) : 2 
+Seed for random number generator : 1234 
+Allele frequency : No updating by accounting for the inferred relationship 
+Species : Diploid 
+Sibship size prior : Yes 
+paternal & maternal sibship sizes : 1  1 
+Known population allele frequency : Yes 
+Number of run : 1 
+Length of run : Medium 
+Monitor intermiediate results by : Every 1 second 
+Prob. a dad is included in the male candidates : 0.50 
+Prob. a mum is included in the female candidates : 0.94 
+Project data input produced : 20/06/2018 
