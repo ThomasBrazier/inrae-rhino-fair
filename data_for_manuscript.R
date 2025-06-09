@@ -341,7 +341,7 @@ for (i in convergencePic$Run) {
 }
 # Which is the best under Geweke diagnostic?
 convergencePic
-which(abs(convergencePic$Alpha) < 0.6 & abs(convergencePic$Ln.Lik) < 0.6)
+# which(abs(convergencePic$Alpha) < 0.6 & abs(convergencePic$Ln.Lik) < 0.6)
 
 # Selected Run = 2
 i = 2
@@ -395,7 +395,7 @@ for (i in convergenceThu$Run) {
 }
 # Which is the best under Geweke diagnostic?
 convergenceThu
-which(abs(convergenceThu$Alpha) < 0.6 & abs(convergenceThu$Ln.Lik) < 0.6)
+# which(abs(convergenceThu$Alpha) < 0.6 & abs(convergenceThu$Ln.Lik) < 0.6)
 
 # Selected Run = 7
 i = 7
@@ -499,9 +499,490 @@ quantile(boot, c(0.025, 0.975))
 # lower than Picardy, at 0.70 (IC95 = [0.56; 0.82], 1,000 bootstraps). The fitted Weibull had a shape of 0.99
 # (IC95 = [0.87; 1.16], 1,000 bootstraps) and a scale of 31.8 (IC95 = [22.4; 42.5], 1,000 bootstraps).
 
+# Need the distancesDist.txt output file as dataset
+distPic = read.table("AssignationPic/outputs/distancesDistPic_gametic.txt", header = TRUE)
+distThu = read.table("AssignationThu/outputs/distancesDistThu_gametic.txt", header = TRUE)
+
+dataPic = distPic[which(distPic$dist == "ObsSelect"), 1]
+plotdist(distPic[which(distPic$dist == "ObsSelect"), 1], histo = TRUE, demp = TRUE)
+descdist(distPic[which(distPic$dist == "ObsSelect"), 1], discrete=FALSE, boot=1000)
 
 
 
+#-----------------------------------------------------------------------------#
+# Table 1 ----
+#-----------------------------------------------------------------------------#
+
+
+#-----------------------------------------------------------------------------#
+# Picardy
+#-----------------------------------------------------------------------------#
+Table1a = data.frame(model = c("Gaussian",
+                              "Negative exponential",
+                              "Exponential power",
+                              "Weibull",
+                              "Gamma"),
+                    n_parameters = c(2, 1, 3, 2, 2),
+                    Thuringia_AIC = NA,
+                    Thuringia_BIC = NA,
+                    Picardy_AIC = NA,
+                    Picardy_BIC = NA)
+
+
+# Eligible functions are continuous, with a random variable X defined on 0 to +Inf
+# Gaussian and exponential, usually poorer fits, are used as references
+fit_e = fitdist(dataPic, distr = "exp")
+summary(fit_e)
+fit_gauss = fitdist(dataPic, distr = "norm")
+summary(fit_gauss)
+# Based on previous graphical representation, we try to fit weibull and gamma distributions
+fit_w  = fitdist(dataPic, distr = "weibull", lower = c(0,0), start = list(shape = 1, scale = 1))
+summary(fit_w)
+fit_g  = fitdist(dataPic, distr = "gamma", lower = c(0,0), start = list(shape = 1, rate = 1))
+summary(fit_g)
+# Weibull and Gamma not fitting !
+# They are defined on values > 0
+
+# Exponential Power can be loaded from the package 'gnorm' described here: https://cran.r-project.org/web/packages/gnorm/vignettes/gnormUse.html
+# Generalized Normal Distribution is the other name of the exponential power
+fit_expower = fitdist(dataPic, distr = "gnorm", lower = c(0,0,0), start = list(mu = 0.5, alpha = 1, beta = 1))
+summary(fit_expower)
+
+
+
+# LogLikelihood
+fit_gauss$loglik
+fit_e$loglik
+fit_expower$loglik
+fit_w$loglik
+fit_g$loglik
+# AIC values compared for model choice
+fit_gauss$aic
+fit_e$aic
+fit_expower$aic
+fit_w$aic
+fit_g$aic
+# BIC values
+fit_gauss$bic
+fit_e$bic
+fit_expower$bic
+fit_w$bic
+fit_g$bic
+# Based on AIC values, Log normal, Weibull and Gamma fit the best the data (AIC ~ -301, -303 and -330)
+# The Gaussian, Exponential and Exponential power are not adequate (AIC = 667, 543 and 568) and poorly fit graphically
+
+Table1a$Picardy_AIC = c(fit_gauss$aic,
+                         fit_e$aic,
+                         fit_expower$aic,
+                         fit_w$aic,
+                         fit_g$aic)
+
+Table1a$Picardy_BIC = c(fit_gauss$bic,
+                         fit_e$bic,
+                         fit_expower$bic,
+                         fit_w$bic,
+                         fit_g$bic)
+
+
+
+#-----------------------------------------------------------------------------#
+# Thuringia
+#-----------------------------------------------------------------------------#
+dataThu = distThu[which(distThu$dist == "ObsSelect"), 1]
+plotdist(distThu[which(distThu$dist == "ObsSelect"), 1], histo = TRUE, demp = TRUE)
+descdist(distThu[which(distThu$dist == "ObsSelect"), 1], discrete=FALSE, boot=1000)
+
+
+# Eligible functions are continuous, with a random variable X defined on 0 to +Inf
+# Gaussian and exponential, usually poorer fits, are used as references
+fit_e = fitdist(dataThu, distr = "exp")
+summary(fit_e)
+fit_gauss = fitdist(dataThu, distr = "norm")
+summary(fit_gauss)
+# Based on previous graphical representation, we try to fit weibull and gamma distributions
+fit_w  = fitdist(dataThu, distr = "weibull", lower = c(0,0), start = list(shape = 1, scale = 1))
+summary(fit_w)
+fit_g  = fitdist(dataThu, distr = "gamma", lower = c(0,0), start = list(shape = 1, rate = 1))
+summary(fit_g)
+# Weibull and Gamma not fitting !
+# They are defined on values > 0
+
+# Exponential Power can be loaded from the package 'gnorm' described here: https://cran.r-project.org/web/packages/gnorm/vignettes/gnormUse.html
+# Generalized Normal Distribution is the other name of the exponential power
+fit_expower = fitdist(dataThu, distr = "gnorm", lower = c(0,0,0), start = list(mu = 0.5, alpha = 1, beta = 1))
+summary(fit_expower)
+
+
+
+# LogLikelihood
+fit_gauss$loglik
+fit_e$loglik
+fit_expower$loglik
+fit_w$loglik
+fit_g$loglik
+# AIC values compared for model choice
+fit_gauss$aic
+fit_e$aic
+fit_expower$aic
+fit_w$aic
+fit_g$aic
+# BIC values
+fit_gauss$bic
+fit_e$bic
+fit_expower$bic
+fit_w$bic
+fit_g$bic
+# Based on AIC values, Log normal, Weibull and Gamma fit the best the data (AIC ~ -301, -303 and -330)
+# The Gaussian, Exponential and Exponential power are not adequate (AIC = 667, 543 and 568) and poorly fit graphically
+
+Table1a$Thuringia_AIC = c(fit_gauss$aic,
+                         fit_e$aic,
+                         fit_expower$aic,
+                         fit_w$aic,
+                         fit_g$aic)
+
+Table1a$Thuringia_BIC = c(fit_gauss$bic,
+                        fit_e$bic,
+                        fit_expower$bic,
+                        fit_w$bic,
+                        fit_g$bic)
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------#
+# HURDLE MODELS: Modelling two different processes... ----
+#-----------------------------------------------------------------------------#
+# This is a two-parts model, with a binomial process of intra/extra colonial mating (i.e. probability of a 0)
+# and a continuous distribution of distances
+# Some informations:
+# https://seananderson.ca/2014/05/18/gamma-hurdle/
+# https://stats.stackexchange.com/questions/320924/is-a-hurdle-model-really-one-model-or-just-two-separate-sequential-models
+# https://stackoverflow.com/questions/36312771/making-zero-inflated-or-hurdle-model-with-r
+
+
+Table1b = data.frame(model = c("Binomial + Gaussian",
+                               "Binomial + Negative exponential",
+                               "Binomial + Exponential power",
+                               "Binomial + Weibull",
+                               "Binomial + Gamma",
+                               "Binomial + Log-normal"),
+                     n_parameters = c(3, 2, 4, 3, 3, 3),
+                     Thuringia_AIC = NA,
+                     Thuringia_BIC = NA,
+                     Picardy_AIC = NA,
+                     Picardy_BIC = NA)
+
+
+#----------------------------------------------------------------------------#
+# Picardy
+#----------------------------------------------------------------------------#
+# Fitting the intercept, the probability of intra-colonial paternity (i.e. null value)
+# with a binomial law
+non_zero = ifelse(dataPic > 0, 0, 1)
+(fit_bin = glm(non_zero ~ 1, family = binomial(link = logit))) # binomial: probability of 0 value
+(bin_coef = plogis(coef(fit_bin)[[1]])) # prob = 0.51
+summary(fit_bin)
+logLik(fit_bin)
+AIC(fit_bin)
+BIC(fit_bin)
+# The intercept is the y value from which the fitted distribution of non-null values must start
+
+# Estimate CI for binomial coefficient with bootstrap
+paramPic = data.frame(parameter = character(), mean = numeric(), lower = numeric(), upper = numeric())
+k = 3 # Number of parameters estimated
+threshold = 0.025
+boot = numeric()
+nboot = 1000
+for (i in 1:nboot) {
+  print(i)
+  fit_bin_boot = glm(sample(non_zero, replace = TRUE) ~ 1, family = binomial(link = logit))
+  boot[i] = (bin_coef = plogis(coef(fit_bin_boot)[[1]]))
+}
+mean(boot)
+quantile(boot, threshold)
+quantile(boot, 1 - threshold)
+
+# The probability of mating outside the colony:
+1 - mean(boot)
+1 - quantile(boot, threshold)
+1 - quantile(boot, 1 - threshold)
+
+
+# THEN... Fitting only the non-null values
+# Making a zero-truncated dataset
+non_zero = ifelse(dataPic > 0, 1, 0)
+dataPic_pos = subset(dataPic, non_zero == 1)
+
+# Gaussian and exponential as references
+fit_e = fitdist(dataPic_pos, distr = "exp")
+summary(fit_e)
+fit_gauss = fitdist(dataPic_pos, distr = "norm")
+summary(fit_gauss)
+# Based on previous graphical representation, we try to fit weibull and gamma distributions
+fit_w  = fitdist(dataPic_pos, distr = "weibull")
+summary(fit_w)
+fit_g  = fitdist(dataPic_pos, distr = "gamma")
+summary(fit_g)
+# A lognormal law is defined by x>0
+fit_ln  = fitdist(dataPic_pos, distr = "lnorm")
+summary(fit_ln)
+fit_expower = fitdist(dataPic_pos, distr = "gnorm", lower = c(0,0,0), start = list(mu = 0.5, alpha = 1, beta = 1))
+summary(fit_expower)
+# Exp power fails to fit
+
+
+# Bootstrapping CI for parameters of the chosen model, here Weibull
+# Shape and scale
+boot_shape = numeric()
+boot_scale = numeric()
+nboot = 1000
+for (i in 1:nboot) {
+  print(i)
+  fit_w_boot  = fitdist(sample(dataPic_pos, replace = TRUE), distr = "weibull")
+  boot_shape[i] = fit_w_boot$estimate[1]
+  boot_scale[i] = fit_w_boot$estimate[2]
+}
+mean(boot_shape)
+quantile(boot_shape, 0.025)
+quantile(boot_shape, 0.975)
+mean(boot_scale)
+quantile(boot_scale, 0.025)
+quantile(boot_scale, 0.975)
+
+
+
+
+# AIC values compared for model choice
+fit_e$aic
+fit_gauss$aic
+fit_w$aic
+fit_g$aic
+fit_ln$aic
+fit_expower$aic
+
+
+# Full model bin + continuous dist
+# Recompute logLik, AIC and BIC
+
+# LogLik is the sum of the two LogLik estimated separately
+(LLik_gauss = logLik(fit_bin) + logLik(fit_gauss))
+(LLik_e = logLik(fit_bin) + logLik(fit_e))
+(LLik_expower = logLik(fit_bin) + logLik(fit_expower))
+(LLik_w = logLik(fit_bin) + logLik(fit_w))
+(LLik_g = logLik(fit_bin) + logLik(fit_g))
+(LLik_ln = logLik(fit_bin) + logLik(fit_ln))
+
+# AIC : choose the model which minimises 2p – 2ln(L)
+# where p is number of parameters
+# Function AIC
+# AIC = 2p – 2ln(L)
+# (AIC_gauss = AIC(LLik_gauss))
+(AIC_gauss = 2*3-2*LLik_gauss)
+# (AIC_e = AIC(LLik_e))
+(AIC_e = 2*2-2*LLik_e)
+# (AIC_expower = AIC(LLik_expower))
+(AIC_expower = 2*3-2*LLik_expower)
+# (AIC_w = AIC(LLik_w))
+(AIC_w = 2*3-2*LLik_w)
+# (AIC_g = AIC(LLik_g))
+(AIC_g = 2*3-2*LLik_g)
+# (AIC_ln = AIC(LLik_ln))
+(AIC_ln = 2*4-2*LLik_ln)
+
+
+# BIC : choose the model which minimises p.ln(N) - 2ln(L)
+# where p is number of parameters and N number of observations
+# BIC = p.ln(N) - 2ln(L)
+# (BIC_gauss = BIC(LLik_gauss))
+(BIC_gauss = 3*log(length(fit_bin$y))-2*LLik_gauss)
+# (BIC_e = BIC(LLik_e))
+(BIC_e = 2*log(length(fit_bin$y))-2*LLik_e)
+# (BIC_expower = BIC(LLik_expower))
+(BIC_expower = 4*log(length(fit_bin$y))-2*LLik_expower)
+# (BIC_w = BIC(LLik_w))
+(BIC_w = 3*log(length(fit_bin$y))-2*LLik_w)
+# (BIC_g = BIC(LLik_g))
+(BIC_g = 3*log(length(fit_bin$y))-2*LLik_g)
+# (BIC_ln = BIC(LLik_ln))
+(BIC_ln = 3*log(length(fit_bin$y))-2*LLik_ln)
+
+
+Table1b$Picardy_AIC = c(AIC_gauss,
+                        AIC_e,
+                        AIC_expower,
+                        AIC_w,
+                        AIC_g,
+                        AIC_ln)
+Table1b$Picardy_BIC = c(BIC_gauss,
+                        BIC_e,
+                        BIC_expower,
+                        BIC_w,
+                        BIC_g,
+                        BIC_ln)
+
+
+
+#----------------------------------------------------------------------------#
+# Picardy
+#----------------------------------------------------------------------------#
+# Fitting the intercept, the probability of intra-colonial paternity (i.e. null value)
+# with a binomial law
+non_zero = ifelse(dataThu > 0, 0, 1)
+(fit_bin = glm(non_zero ~ 1, family = binomial(link = logit))) # binomial: probability of 0 value
+(bin_coef = plogis(coef(fit_bin)[[1]])) # prob = 0.51
+summary(fit_bin)
+logLik(fit_bin)
+AIC(fit_bin)
+BIC(fit_bin)
+# The intercept is the y value from which the fitted distribution of non-null values must start
+
+# Estimate CI for binomial coefficient with bootstrap
+paramThu = data.frame(parameter = character(), mean = numeric(), lower = numeric(), upper = numeric())
+k = 3 # Number of parameters estimated
+threshold = 0.025
+boot = numeric()
+nboot = 1000
+for (i in 1:nboot) {
+  print(i)
+  fit_bin_boot = glm(sample(non_zero, replace = TRUE) ~ 1, family = binomial(link = logit))
+  boot[i] = (bin_coef = plogis(coef(fit_bin_boot)[[1]]))
+}
+mean(boot)
+quantile(boot, threshold)
+quantile(boot, 1 - threshold)
+
+# The probability of mating outside the colony:
+1 - mean(boot)
+1 - quantile(boot, threshold)
+1 - quantile(boot, 1 - threshold)
+
+
+# THEN... Fitting only the non-null values
+# Making a zero-truncated dataset
+non_zero = ifelse(dataThu > 0, 1, 0)
+dataThu_pos = subset(dataThu, non_zero == 1)
+
+# Gaussian and exponential as references
+fit_e = fitdist(dataThu_pos, distr = "exp")
+summary(fit_e)
+fit_gauss = fitdist(dataThu_pos, distr = "norm")
+summary(fit_gauss)
+# Based on previous graphical representation, we try to fit weibull and gamma distributions
+fit_w  = fitdist(dataThu_pos, distr = "weibull")
+summary(fit_w)
+fit_g  = fitdist(dataThu_pos, distr = "gamma")
+summary(fit_g)
+# A lognormal law is defined by x>0
+fit_ln  = fitdist(dataThu_pos, distr = "lnorm")
+summary(fit_ln)
+fit_expower = fitdist(dataThu_pos, distr = "gnorm", lower = c(0,0,0), start = list(mu = 0.5, alpha = 1, beta = 1))
+summary(fit_expower)
+# Exp power fails to fit
+
+
+# Bootstrapping CI for parameters of the chosen model, here Weibull
+# Shape and scale
+boot_shape = numeric()
+boot_scale = numeric()
+nboot = 1000
+for (i in 1:nboot) {
+  print(i)
+  fit_w_boot  = fitdist(sample(dataThu_pos, replace = TRUE), distr = "weibull")
+  boot_shape[i] = fit_w_boot$estimate[1]
+  boot_scale[i] = fit_w_boot$estimate[2]
+}
+mean(boot_shape)
+quantile(boot_shape, 0.025)
+quantile(boot_shape, 0.975)
+mean(boot_scale)
+quantile(boot_scale, 0.025)
+quantile(boot_scale, 0.975)
+
+
+
+
+# AIC values compared for model choice
+fit_e$aic
+fit_gauss$aic
+fit_w$aic
+fit_g$aic
+fit_ln$aic
+fit_expower$aic
+
+
+# Full model bin + continuous dist
+# Recompute logLik, AIC and BIC
+
+# LogLik is the sum of the two LogLik estimated separately
+(LLik_gauss = logLik(fit_bin) + logLik(fit_gauss))
+(LLik_e = logLik(fit_bin) + logLik(fit_e))
+(LLik_expower = logLik(fit_bin) + logLik(fit_expower))
+(LLik_w = logLik(fit_bin) + logLik(fit_w))
+(LLik_g = logLik(fit_bin) + logLik(fit_g))
+(LLik_ln = logLik(fit_bin) + logLik(fit_ln))
+
+# AIC : choose the model which minimises 2p – 2ln(L)
+# where p is number of parameters
+# Function AIC
+# AIC = 2p – 2ln(L)
+# (AIC_gauss = AIC(LLik_gauss))
+(AIC_gauss = 2*3-2*LLik_gauss)
+# (AIC_e = AIC(LLik_e))
+(AIC_e = 2*2-2*LLik_e)
+# (AIC_expower = AIC(LLik_expower))
+(AIC_expower = 2*3-2*LLik_expower)
+# (AIC_w = AIC(LLik_w))
+(AIC_w = 2*3-2*LLik_w)
+# (AIC_g = AIC(LLik_g))
+(AIC_g = 2*3-2*LLik_g)
+# (AIC_ln = AIC(LLik_ln))
+(AIC_ln = 2*4-2*LLik_ln)
+
+
+# BIC : choose the model which minimises p.ln(N) - 2ln(L)
+# where p is number of parameters and N number of observations
+# BIC = p.ln(N) - 2ln(L)
+# (BIC_gauss = BIC(LLik_gauss))
+(BIC_gauss = 3*log(length(fit_bin$y))-2*LLik_gauss)
+# (BIC_e = BIC(LLik_e))
+(BIC_e = 2*log(length(fit_bin$y))-2*LLik_e)
+# (BIC_expower = BIC(LLik_expower))
+(BIC_expower = 4*log(length(fit_bin$y))-2*LLik_expower)
+# (BIC_w = BIC(LLik_w))
+(BIC_w = 3*log(length(fit_bin$y))-2*LLik_w)
+# (BIC_g = BIC(LLik_g))
+(BIC_g = 3*log(length(fit_bin$y))-2*LLik_g)
+# (BIC_ln = BIC(LLik_ln))
+(BIC_ln = 3*log(length(fit_bin$y))-2*LLik_ln)
+
+
+
+Table1b$Thuringia_AIC = c(AIC_gauss,
+                        AIC_e,
+                        AIC_expower,
+                        AIC_w,
+                        AIC_g,
+                        AIC_ln)
+Table1b$Thuringia_BIC = c(BIC_gauss,
+                        BIC_e,
+                        BIC_expower,
+                        BIC_w,
+                        BIC_g,
+                        BIC_ln)
+
+
+
+Table1 = rbind(Table1a, Table1b)
+
+write.table(Table1, "Tables/Table1.tsv", sep = "\t",
+            col.names = , row.names = F)
 
 
 #=============================================================================#

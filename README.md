@@ -50,12 +50,6 @@ Data/Thu/uniqueGenotypesWithInfo.txt
 ```
 
 
-`Analyses.zip`
-
-`Data.zip`
-
-
-
 ## Reproduce analyses
 
 I assume that you run these scripts on a Linux system. Before running each script, set your working directory to the script location.
@@ -87,6 +81,9 @@ The COLONY analysis is performed in `AssignationPic` and `AssignationThu` for Fr
 The complete workflow is in these directories:
 
 
+*THIS PART IS COMPUTATIONNALLY INTENSIVE*
+
+
 * `AssignationThu/01_prepadata/` prepare the dataset *DO NOT RE-RUN UNLESS NECESSARY*
 * `AssignationThu/01_prepadata/01a_ExtractData.R` Get the data and format the dataset *DO NOT RE-RUN UNLESS NECESSARY*
 * `AssignationThu/02_colony/` where to run COLONY *DO NOT RE-RUN UNLESS NECESSARY*
@@ -94,6 +91,12 @@ The complete workflow is in these directories:
 * `AssignationThu/03_simulations/` Where to run COLONY on simulations *DO NOT RE-RUN UNLESS NECESSARY*
 * `AssignationThu/03_simulations/03_simulations.R` Prepare input for COLONY simulation module *DO NOT RE-RUN UNLESS NECESSARY*
 * `AssignationThu/04_data/` The final data produced
+
+
+
+*THIS PART TO PRODUCE OUTPUT FILES FOR DOWNSTREAM ANALYSES*
+
+
 * `AssignationThu/AnalyseSimulations.R` to produce the COLONY empirical output dataset for downstream analyses
 * `AssignationThu/AnalyseColony.R` to produce the COLONY simulation output dataset for downstream analyses
 

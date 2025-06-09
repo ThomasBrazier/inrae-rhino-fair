@@ -453,13 +453,13 @@ fit_expower$aic
 # (BIC_e = BIC(LLik_e))
 (BIC_e = 2*log(length(fit_bin$y))-2*LLik_e)
 # (BIC_expower = BIC(LLik_expower))
-(BIC_expower = 3*log(length(fit_bin$y))-2*LLik_expower)
+(BIC_expower = 4*log(length(fit_bin$y))-2*LLik_expower)
 # (BIC_w = BIC(LLik_w))
 (BIC_w = 3*log(length(fit_bin$y))-2*LLik_w)
 # (BIC_g = BIC(LLik_g))
 (BIC_g = 3*log(length(fit_bin$y))-2*LLik_g)
 # (BIC_ln = BIC(LLik_ln))
-(BIC_ln = 4*log(length(fit_bin$y))-2*LLik_ln)
+(BIC_ln = 3*log(length(fit_bin$y))-2*LLik_ln)
 
 
 
