@@ -234,7 +234,7 @@ ks.test(dyadsH0$distance, dyadsObsSelect$distance)
 # Bootstrap implies some randomness in the results
 nboot = 10000
 boot = numeric(nboot)
-
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = mean(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -244,6 +244,7 @@ quantile(boot, c(0.025, 0.975))
 
 
 # The median mating dispersal distance
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = median(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -271,7 +272,7 @@ ks.test(dyadsH0$distance, dyadsObsSelect$distance)
 # Bootstrap implies some randomness in the results
 nboot = 10000
 boot = numeric(nboot)
-
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = mean(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -281,6 +282,7 @@ quantile(boot, c(0.025, 0.975))
 
 
 # The median mating dispersal distance
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = median(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -432,6 +434,7 @@ dyadsObsSelect = read.table("AssignationPic/dyadsObsSelect_gametic.txt", header=
 # Bootstrap implies some randomness in the results
 nboot = 10000
 boot = numeric(nboot)
+set.seed(42) # set seed to reproduce bootstrap exactly
 
 for (i in 1:nboot) {
   boot[i] = mean(sample(dyadsObsSelect$distance, replace = T))
@@ -442,6 +445,7 @@ quantile(boot, c(0.025, 0.975))
 
 
 # The median mating dispersal distance
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = median(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -462,6 +466,7 @@ dyadsObsSelect = read.table("AssignationThu/dyadsObsSelect_gametic.txt", header=
 # Bootstrap implies some randomness in the results
 nboot = 10000
 boot = numeric(nboot)
+set.seed(42) # set seed to reproduce bootstrap exactly
 
 for (i in 1:nboot) {
   boot[i] = mean(sample(dyadsObsSelect$distance, replace = T))
@@ -472,6 +477,7 @@ quantile(boot, c(0.025, 0.975))
 
 
 # The median mating dispersal distance
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   boot[i] = median(sample(dyadsObsSelect$distance, replace = T))
 }
@@ -700,6 +706,7 @@ k = 3 # Number of parameters estimated
 threshold = 0.025
 boot = numeric()
 nboot = 1000
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   print(i)
   fit_bin_boot = glm(sample(non_zero, replace = TRUE) ~ 1, family = binomial(link = logit))
@@ -743,6 +750,7 @@ summary(fit_expower)
 boot_shape = numeric()
 boot_scale = numeric()
 nboot = 1000
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   print(i)
   fit_w_boot  = fitdist(sample(dataPic_pos, replace = TRUE), distr = "weibull")
@@ -849,6 +857,7 @@ k = 3 # Number of parameters estimated
 threshold = 0.025
 boot = numeric()
 nboot = 1000
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   print(i)
   fit_bin_boot = glm(sample(non_zero, replace = TRUE) ~ 1, family = binomial(link = logit))
@@ -892,6 +901,7 @@ summary(fit_expower)
 boot_shape = numeric()
 boot_scale = numeric()
 nboot = 1000
+set.seed(42) # set seed to reproduce bootstrap exactly
 for (i in 1:nboot) {
   print(i)
   fit_w_boot  = fitdist(sample(dataThu_pos, replace = TRUE), distr = "weibull")
