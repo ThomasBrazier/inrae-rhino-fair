@@ -20,3 +20,4 @@ dependencies:
   - r-fdrtool
   - r-sp
   - r-distr
+  - r-rcolorbrewer
