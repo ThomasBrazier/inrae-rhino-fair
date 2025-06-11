@@ -1,0 +1,21 @@
+name: adegenet_legacy
+channels:
+  - conda-forge
+dependencies:
+  - r-base=4.1.2
+  - r-devtools
+  - r-mass
+  - r-fitdistrplus
+  - r-gamlss.dist
+  - r-ggplot2
+  - r-ggpubr
+  - r-adegenet<=1.5
+  - r-coda
+  - r-geosphere
+  - r-hierfstat<=0.5_10
+  - r-ade4
+  - r-moments
+  - r-extraDistr
+  - r-fdrtool
+  - r-sp
+  - r-distr

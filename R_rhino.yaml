@@ -1,0 +1,22 @@
+name: R_rhino
+channels:
+  - conda-forge
+dependencies:
+  - r-devtools
+  - r-MASS
+  - r-fitdistrplus
+  - r-gamlss.dist
+  - r-ggplot2
+  - r-ggpubr
+  - r-gnorm
+  - r-adegenet
+  - r-coda
+  - r-geosphere
+  - r-hierfstat
+  - r-ade4
+  - r-fitdistrplus
+  - r-moments
+  - r-extraDistr
+  - r-fdrtool
+  - r-sp
+  - r-distr
