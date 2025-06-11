@@ -236,19 +236,6 @@ constructColony=function(n=1){
 #--------------------------#
 # Ecriture des commandes Shell
 #--------------------------#
-#!/bin/bash
-#Script Torque
-#PBS -l ncpus=1
-#PBS -l mem=10000mb
-#PBS -l cput=200:00:00
-#PBS -V
-#PBS -m abe
-#PBS -M thomas.brazier@inra.fr
-#PBS -l walltime=200:00:00
-#PBS -q batch
-# cri_job_type = serial
-# cri_initialdir =	/usr/local/torque/SERIAL/IN
-# cri_finaldir =	/usr/local/torque/SERIAL/OUT
 
 #Commandes utilisateur
 shellCommand=function(n=1){
@@ -259,13 +246,13 @@ shellCommand=function(n=1){
 #PBS -l cput=600:00:00
 #PBS -V
 #PBS -m abe
-#PBS -M thomas.brazier@inra.fr
+#PBS -M mail@mail.fr
 #PBS -l walltime=600:00:00
 #PBS -q batch
 # cri_job_type = serial
 # cri_initialdir =	/usr/local/torque/SERIAL/IN
 # cri_finaldir =	/usr/local/torque/SERIAL/OUT
-cd /home/users/tbrazier/Colony\n",
+cd ~/Colony\n",
                        stringsAsFactors = F)
   for (r in 1:n) {
     Commandes=rbind(Commandes,paste("colony2s.gnu.out IFN:",paste("Colony",r,".Dat",sep=""),sep=""))

@@ -13,9 +13,11 @@ source("fonctionsPrepaSim.R")
 
 
 #-------------------------------#
+# MAKE A THEORETICAL RANDOM POPULATION
 # CREATION D'UNE POP THEORIQUE ALEATOIRE
 #-------------------------------
 
+##### RANDOM MATING MATRIX
 ##### MATRICE D'ACCOUPLEMENT ALEATOIRE
 # Procedure de force brute
 # Tirage de matrices jusqu'a obtenir matrice conforme
@@ -29,9 +31,8 @@ source("fonctionsPrepaSim.R")
 # OR
 # Mating=as.matrix(read.table("MatriceAccouplement.txt",header=FALSE,sep=" "))
 
-library(rstudioapi)
-wd=dirname(rstudioapi::getSourceEditorContext()$path)
 
+##### MAKE INPUT FOR COLONY SIMULATION
 ##### CONSTRUCTION DE L'INPUT POUR SIMULATION
 # Met en forme le fichier Input.Par
 # avec les parametres choisis et la matrice d'accouplement

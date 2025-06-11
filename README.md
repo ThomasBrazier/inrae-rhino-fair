@@ -28,17 +28,75 @@ As of March 2025, PCI Ecology and PCI Evol Biol are implementing data and code c
 6. Does running the code with the provided data produce the same results as written in the manuscript?
 
 
+
+## Self-assessment
+
+Self-assessment questionnaire regarding data, scripts, and code:
+
+
+* Can the data and script be accessed via the links provided in the submission form or directly within the manuscript?
+* Do the data and scripts have an appropriate license (e.g., CC-BY)?
+* Is the format of the data and scripts interoperable?
+* Do the data and scripts have a README file?
+* Are the README and data files comprehensible to a naive reader?
+* Are the scripts sufficiently annotated for a naive reader to understand what was done?
+* Do the data (all variables used for the analyses) and scripts provided match all the data and analyses (including data transformation and supplementary analyses) presented in the manuscript?
+* Do the scripts run easily with the data?
+* Do the estimates, figures, and tables generated match all the estimates, figures, and tables presented in the manuscript?
+
+
+Frequent errors that hinder computational reproducibility include:
+
+
+* Absence of script verification since conducting the analyses (before drafting the manuscript).
+* Scripts referencing files with names that do not match the available files.
+* Scripts using absolute paths to files rather than relative paths.
+* Scripts authored in languages other than English.
+* README files lack adequate details regarding the scripts' purpose.
+* Absence of program installation instructions in the README file.
+* Insufficient or inadequate script annotations.
+* Omission of comments on the duration of lengthy script executions.
+* Non-preconfigured installations of necessary packages or libraries within the scripts.
+
+
+
+## Install packages in a virtual env
+
+
+You can install the required packages with conda 
+
+```
+conda env create -f R_rhino.yaml
+```
+
+and run R or Rstudio in this environment
+
+```
+conda activate R_Rhino
+rstudio
+```
+
+Alternatively, if you need the exact versions used for the last round of revisions (june 2025), you can get the exact environment with `conda`:
+
+
+```
+conda env create --name R_rhino_exact_env -f spec-file-exact-env.txt
+```
+
+
 ## Data and files
 
 ```
-Data/Pic/coordPic.txt
-Data/Pic/distancesDist.txt
-Data/Pic/distancesDistPic_gametic.txt
-Data/Pic/dyadsObs.txt
-Data/Pic/dyadsObsSelect.txt
-Data/Pic/resultsWithInfo.txt
-Data/Pic/uniqueGenotypesWithInfo.txt
+Data/Pic/coordPic.txt # Coordinates of the colonies
+Data/Pic/distancesDist.txt # Mating dispersal distances offpsring-father
+Data/Pic/distancesDistPic_gametic.txt # Gametic dispersal distances offpsring-father
+Data/Pic/dyadsObs.txt # Pairs of offspring-father inferred
+Data/Pic/dyadsObsSelect.txt # Pairs of offspring-father inferred AFTER filtering
+Data/Pic/resultsWithInfo.txt # Informations (sex, age, colony) on the inferred pairs offspring-father
+Data/Pic/uniqueGenotypesWithInfo.txt # The input data, genotypes of all individuals with sex and age
 ```
+
+The same comments stand for the Thu dataset:
 
 ```
 Data/Thu/coordThu.txt
@@ -60,10 +118,13 @@ In addition, some scripts are experimental, and their outputs are not presented 
 
 
 
+#### Synthetic scripts for the results
 
-The script `data_for_manuscript.R` is the central script to reproduce all the results presented in the paper. In addition, figures are produced by the script `Figures_preprint.R`.
+The script `data_for_manuscript.R` is a synthetic script to reproduce all the results presented in the paper. In addition, all the figures are produced by the script `Figures_preprint.R`.
 
 
+
+#### Description of the data analysis workflow
 
 The scripts to reproduce analyses must be run in this order:
 
@@ -76,9 +137,10 @@ Basic summary statistics of genetic diversity are computed in `GeneticDiversity.
 
 (2) COLONY
 
-The COLONY analysis is performed in `AssignationPic` and `AssignationThu` for France and Germany, respectively.
+The COLONY analysis is performed in `AssignationPic` and `AssignationThu` for France and Germany, respectively. The workflow is exactly the same between Pic and Thu directories. However, the original comments were in French ands I only translated the French directory (Pic). Please see `AssignationPic` for an english commented pipeline.
 
-The complete workflow is in these directories:
+
+The complete workflow is divided in these directories for each step:
 
 
 *THIS PART IS COMPUTATIONNALLY INTENSIVE*
@@ -166,13 +228,17 @@ Tables/ParamThu.txt # The best fit Kernel on the Mating Dispersal distances in T
 
 (7) Figures and Tables
 
-Run `Figures_preprint.R` to generate the figures presented in the paper.
+
+Figures are stored in `Figures\` and tables in `Tables\`.
+
+The script to reproduce all the figures in the main text is `Figures_preprint.R`.
 
 ```
 Fig 1
 Fig 2
 Fig 3
 Fig S1
+Fig S2
 ```
 
 The following script produces the results presented in the paper: `data_for_manuscript.R`
@@ -186,8 +252,8 @@ Table S1
 
 
 
-## Reproduce Tables and Figures
+## License
 
-Figures are stored in `Figures\` and tables in `Tables\`.
+The license for code and data is the GNU AFFERO GENERAL PUBLIC LICENSE v3. Read the `LICENSE` file for details.
 
-The script to reproduce all the figures in the main text is `Figures_preprint.R`.
+

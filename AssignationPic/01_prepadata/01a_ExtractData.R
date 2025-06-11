@@ -20,14 +20,16 @@ source("fonctionsPrepaData.R")
 #-------------------------------#
 # Get the data
 #-------------------------------#
-
+# Read the data extracted from the Database
 BDD=read.table("allInfosBDD.txt",h=T,sep="\t")
+
+# Build the starting dataset
 # Construit le jeu de donnees
 # argument 1 : BDD contient toutes les donnees
-# argument 2 : falseloci= le nombre max de loci incorrects acceptes avant d'exclure l'individu
-# e.g. falseloci=2 signifie que tous les ind avec 0,1 ou 2 loci incomplets sont conserves
-# argument 3 : withcolony=TRUE pour avoir les donnees d'echantillonnage de chaque session
-# argument 4 : sexmark=TRUE pour garder le marqueur sexuel dby8
+# argument 2 : falseloci= max number of incorrect loci to keep the individual
+# e.g. falseloci=2 means individuals with 0,1 ou 2 incomplete loci are kept
+# argument 3 : withcolony=TRUE to get sampling data for each year
+# argument 4 : sexmark=TRUE to keep sexual maerker dby8
 unique=UniqueGenotypes(BDD,falseloci=2,withcolony=T,sexmark=F)
 # le data set pret est dans uniqueGenotypesWithInfo.txt
 

@@ -36,11 +36,25 @@ info = read.table("../Data/Pic/uniqueGenotypesWithInfo.txt", h = T)
 #   A PARTIR DE N RUNS DE COLONY
 #-------------------------------
 
+# Get all the juveniles assigned to a parent (father/mother)
+# Build the juvenile files
+# Then get paternities
+# and build the paternity file
+# excluding false paternitities
+
 # Recuperation de tous les juveniles assignes a un parent
 # construction du fichier des juveniles
 # Recuperation des paternites
 # Construction du fichier des paternites
 # Exclusion des fausses assignations
+
+# Arguments
+# path = path to COLONY assignation output
+# excl = the proportion of runs required to be kept as a father
+# assignments below this threshold are removed
+
+# Make it on the dataset with individuals with at least 7/9 loci, without colony M399
+# and the dataset with only individuals with 9/9 loci
 paternity=constructResults(path="Colony79lociSansM399/",excl=0.3)
 paternity2=constructResults(path="Colony99loci/",excl=0.3)
 # OR
@@ -49,8 +63,11 @@ paternity2=constructResults(path="Colony99loci/",excl=0.3)
 
 ###### SELECTION de PATERNITY
 ###### RASSEMBLER LES DEUX JEUX DE DONNEES paternity ET paternity2
+###### Merging paternity and paternity2 for a consensus dataset
+
 # 1/ Conflits entre les deux resultats ?
 # Combien de juveniles identiques retrouves
+# How many identical juveniles founds ?
 identique=sum((paternity[,1] %in% paternity2[,1]))
 identique
 totalpat=(nrow(paternity) + nrow(paternity2))-identique
@@ -72,6 +89,7 @@ length(count)
 sum(sort(father79)!=sort(father99))
 
 # 2/ Combiner les deux jeux de donnees
+# 2/ Combine the two datasets
 # Argument : "99" prend le jeu de donnees 9/9 loci complets
 #           "79" prend le jeu de donnees 7/9 loci complets
 #           "all" prend les deux jeux de donnees
@@ -89,7 +107,7 @@ write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
 #-----------------------------#
 # SIM RESULTS WITH INFOS - EXPORT DATA
 #-----------------------------
-# give a file containing :
+# Save a file containing :
 # - offspring ID
 # - fathers and mothers ID
 # - sex
@@ -99,9 +117,10 @@ write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
 empiricalResultsWithInfo()
 
 #-------------------------------#
+#   DESCRIBE RESULTS
 #   DESCRIPTION DES RESULTATS
 #   A PARTIR DE N RUNS DE COLONY
-#-------------------------------
+#-------------------------------#
 descResults=describeResults(Paternities)
 write.table(descResults,paste(Rdir,"Assignation/resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
 
@@ -160,6 +179,7 @@ length(unique(descResults$father)) # nombre de peres
 
 
 #-------------------------------#
+#   COMPUTE THE H0 NULL DISTRIBUTION
 #   CONSTRUCTION DE LA DISTRIBUTION H0
 #-------------------------------
 
@@ -172,6 +192,11 @@ length(unique(descResults$father)) # nombre de peres
 # 3/ Pour chaque tirage et chaque classe de distance : calculer la freq cumulee (i.e. combien de valeurs <= distance / total)
 # 4/ Prendre les quantiles a 2.5% et 97.5% parmi les 1000 freq cumulees echantillonnees pour chaque classe de distance
 
+# DISTRIBUTION H0 WITH CONFIDENCE INTERVAL
+# 1/ 1000 resampling
+# 2/ Cumulative frequencies for each class of distance
+# 3/ For each draw compute the cumulative frequency (i.e. how many values <= distance / total)
+# 4/ Take the 2.5% et 97.5% quantiles
 Maternities=read.table("Maternities.txt",header=TRUE)
 Paternities=read.table("Paternities.txt",header=TRUE)
 
@@ -279,7 +304,7 @@ etDispersalH0=etboot
 
 #----
 #-------------------------------
-#   CONSTRUCTION DE LA DISTRIBUTION OBSERVEE
+#   MAKE THE OBSERVED DISTRIBUTION
 #-------------------------------#
 #----
 # abscisse : distance offspring-father
@@ -327,6 +352,7 @@ write.table(dyadsObs,"dyadsObs.txt",col.names=TRUE,row.names=FALSE)
 
 #-------------------------------#
 #   MEAN DISPERSAL DISTANCE
+#     BOOTSTRAP
 #-------------------------------
 # Intervalle de confiance de la moyenne : calcul par bootstrap
 #########################
@@ -438,8 +464,8 @@ ggplot(data=df1, aes(x=d, y=freq)) +
         legend.title=element_text(size=14),
         legend.position='none')
 
-ggsave(paste(graphdir,"/Distribution of offspring-father distances PicAll.tiff",sep=""),
-       device="tiff",dpi=320,units="cm",width=19,height=13)
+# ggsave(paste(graphdir,"/Distribution of offspring-father distances PicAll.tiff",sep=""),
+#        device="tiff",dpi=320,units="cm",width=19,height=13)
 
 ################
 # Violin plots
@@ -516,6 +542,9 @@ ks.test(x=dyadsH0$distance,
 
 
 
+##############################################################
+# Below is experimental - not required
+##############################################################
 
 #-------------------------------#
 #   % OF PARENTS IN SAME COLONY AS OFFSPRING
