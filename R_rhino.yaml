@@ -21,3 +21,4 @@ dependencies:
   - r-sp
   - r-distr
   - r-rcolorbrewer
+  - r-rgdal
