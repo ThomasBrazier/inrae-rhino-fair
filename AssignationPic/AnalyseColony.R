@@ -16,7 +16,7 @@ rm(list=ls(all=TRUE))
 #----------------------------------------------------------#
 # Loading packages
 # Check if packages are installed, install if necessary
-source("Sources/packages.R")
+source("../Sources/packages.R")
 source("fonctionsColony.R")
 
 info = read.table("../Data/Pic/uniqueGenotypesWithInfo.txt", h = T)
