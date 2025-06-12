@@ -368,7 +368,7 @@ paramPicKernel = data.frame(dist = c("exp", "norm", "weibull", "gamma", "lnorm",
                             param1 = unlist(c(fit_e$estimate, fit_gauss$estimate[1], fit_w$estimate[1], fit_g$estimate[1], fit_ln$estimate[1], fit_expower$estimate[1])),
                             param2 = unlist(c(NA, fit_gauss$estimate[2], fit_w$estimate[2], fit_g$estimate[2], fit_ln$estimate[2], fit_expower$estimate[2])),
                             param3 = unlist(c(NA, NA, NA, NA, NA, fit_expower$estimate[3])))
-write.table(paramPicKernel, file = "Tables/paramPicKernel.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramPicKernel, file = "Tables/paramPicKernel.txt", quote = F, col.names = T, row.names = F)
 
 # LogLik and AIC can be the sum of the LogLik/AIC of the binomial model and the conditional model (zero-truncated) estimated separately. (McDowell, 2003)
 
@@ -392,7 +392,7 @@ quantile(boot_scale, 0.975)
 paramPic[2,] = c("Shape", mean(boot_shape), quantile(boot_shape, threshold), quantile(boot_shape, 1 - threshold))
 paramPic[3,] = c("Scale", mean(boot_scale), quantile(boot_scale, threshold), quantile(boot_scale, 1 -threshold))
 paramPic
-write.table(paramPic, file = "Tables/ParamPic.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramPic, file = "Tables/ParamPic.txt", quote = F, col.names = T, row.names = F)
 
 #-------------------------
 # Goodness of fit plots
@@ -557,51 +557,51 @@ points(pgamma(subset(dataPic, non_zero == 1), shape = log(gamma_coef)), col = "r
 #=================================#
 # MAKING FIGURES
 #=================================
-
-# Empirical Cumulative Distribution Function
-df=data.frame(d=c(sort(dyadsH0$distance),sort(dyadsObs$distance),sort(dyadsObsSelect$distance)),
-              freq=c(seq(1,length(dyadsH0$distance),1)/length(dyadsH0$distance),seq(1,length(dyadsObs$distance),1)/length(dyadsObs$distance),seq(1,length(dyadsObsSelect$distance),1)/length(dyadsObsSelect$distance)),
-              dist=c(rep("H0",length(dyadsH0$distance)),rep("Obs",length(dyadsObs$distance)),rep("ObsSelect",length(dyadsObsSelect$distance)))
-)
-write.table(df,"distancesDist.txt",row.names=FALSE,col.names=TRUE)
-df1=df[which(df$dist=="H0"),]
-df2=df[which(df$dist=="Obs"),]
-df3=df[which(df$dist=="ObsSelect"),]
-
-ggplot(data=df1, aes(x=d, y=freq)) +
-  stat_function(fun = yfit)+
-  stat_function(fun = yfitInf,lty=2)+
-  stat_function(fun = yfitSup,lty=2)+
-  # stat_function(fun = yfitGamma,size=1.5,lty=3)+
-  stat_function(fun = ybayes,colour="grey")+
-  stat_function(fun = ybayesInf,colour="grey",lty=2)+
-  stat_function(fun = ybayesSup,colour="grey",lty=2)+
-  # geom_point(aes(color="expected"),size=4)+
-  geom_ribbon(data=icH0,aes(x=distance,y=meanFreq,ymin=lowerIC, ymax=upperIC),alpha=0.5) +
-  # geom_point(data=df2,aes(color="observed"),size=4) +
-  geom_point(data=df3,aes(color="observed with selection")) +
-  # geom_line(data=icH0,aes(x=distance,y=lowerIC),color="grey",size=1.5) +
-  # geom_line(data=icH0,aes(x=distance,y=upperIC),color="grey",size=1.5) +
-  scale_colour_manual(values=c("black"))+
-  ylim(0,1) +
-  # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
-  # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
-  xlab("Geographic distance (km)") + ylab("Dyads relative frequency") +
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-        axis.title.x = element_text(color="black", size=14),
-        axis.title.y = element_text(color="black", size=14),
-        axis.text=element_text(size=14, colour="black"),
-        legend.key = element_rect(fill = "white", size = 1),
-        legend.key.height = unit(2,"line"),
-        legend.key.width = unit(5,"line"),
-        legend.text=element_text(size=14),
-        legend.title=element_text(size=14),
-        legend.position='none')
+# 
+# # Empirical Cumulative Distribution Function
+# df=data.frame(d=c(sort(dyadsH0$distance),sort(dyadsObs$distance),sort(dyadsObsSelect$distance)),
+#               freq=c(seq(1,length(dyadsH0$distance),1)/length(dyadsH0$distance),seq(1,length(dyadsObs$distance),1)/length(dyadsObs$distance),seq(1,length(dyadsObsSelect$distance),1)/length(dyadsObsSelect$distance)),
+#               dist=c(rep("H0",length(dyadsH0$distance)),rep("Obs",length(dyadsObs$distance)),rep("ObsSelect",length(dyadsObsSelect$distance)))
+# )
+# # write.table(df,"distancesDist.txt",row.names=FALSE,col.names=TRUE)
+# df1=df[which(df$dist=="H0"),]
+# df2=df[which(df$dist=="Obs"),]
+# df3=df[which(df$dist=="ObsSelect"),]
+# 
+# ggplot(data=df1, aes(x=d, y=freq)) +
+#   stat_function(fun = yfit)+
+#   stat_function(fun = yfitInf,lty=2)+
+#   stat_function(fun = yfitSup,lty=2)+
+#   # stat_function(fun = yfitGamma,size=1.5,lty=3)+
+#   stat_function(fun = ybayes,colour="grey")+
+#   stat_function(fun = ybayesInf,colour="grey",lty=2)+
+#   stat_function(fun = ybayesSup,colour="grey",lty=2)+
+#   # geom_point(aes(color="expected"),size=4)+
+#   geom_ribbon(data=icH0,aes(x=distance,y=meanFreq,ymin=lowerIC, ymax=upperIC),alpha=0.5) +
+#   # geom_point(data=df2,aes(color="observed"),size=4) +
+#   geom_point(data=df3,aes(color="observed with selection")) +
+#   # geom_line(data=icH0,aes(x=distance,y=lowerIC),color="grey",size=1.5) +
+#   # geom_line(data=icH0,aes(x=distance,y=upperIC),color="grey",size=1.5) +
+#   scale_colour_manual(values=c("black"))+
+#   ylim(0,1) +
+#   # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
+#   # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
+#   xlab("Geographic distance (km)") + ylab("Dyads relative frequency") +
+#   theme(axis.line = element_line(colour = "black"),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         panel.border = element_blank(),
+#         panel.background = element_blank(),
+#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+#         axis.title.x = element_text(color="black", size=14),
+#         axis.title.y = element_text(color="black", size=14),
+#         axis.text=element_text(size=14, colour="black"),
+#         legend.key = element_rect(fill = "white", size = 1),
+#         legend.key.height = unit(2,"line"),
+#         legend.key.width = unit(5,"line"),
+#         legend.text=element_text(size=14),
+#         legend.title=element_text(size=14),
+#         legend.position='none')
 
 # ggsave("/Distribution of offspring-father distances PicAll.jpeg",
 #        dpi=320,units="cm",width=19,height=13)
@@ -740,7 +740,7 @@ paramThuKernel = data.frame(dist = c("exp", "norm", "weibull", "gamma", "lnorm",
                             param1 = unlist(c(fit_e$estimate, fit_gauss$estimate[1], fit_w$estimate[1], fit_g$estimate[1], fit_ln$estimate[1], fit_expower$estimate[1])),
                             param2 = unlist(c(NA, fit_gauss$estimate[2], fit_w$estimate[2], fit_g$estimate[2], fit_ln$estimate[2], fit_expower$estimate[2])),
                             param3 = unlist(c(NA, NA, NA, NA, NA, fit_expower$estimate[3])))
-write.table(paramThuKernel, file = "Tables/ParamThuKernel.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramThuKernel, file = "Tables/ParamThuKernel.txt", quote = F, col.names = T, row.names = F)
 
 # LogLik and AIC can be the sum of the LogLik/AIC of the binomial model and the conditional model (zero-truncated) estimated separately. (McDowell, 2003)
 
@@ -824,7 +824,7 @@ quantile(boot_scale, 1 - threshold)
 paramThu[2,] = c("Mean", mean(boot_shape), quantile(boot_shape, threshold), quantile(boot_shape, 1 - threshold))
 paramThu[3,] = c("SD", mean(boot_scale), quantile(boot_scale, threshold), quantile(boot_scale, 1 - threshold))
 paramThu
-write.table(paramThu, file = "Tables/ParamThu.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramThu, file = "Tables/ParamThu.txt", quote = F, col.names = T, row.names = F)
 
 #---------------------------------#
 # END

@@ -357,7 +357,7 @@ paramPicKernel = data.frame(dist = c("exp", "norm", "weibull", "gamma", "lnorm",
                             param1 = unlist(c(fit_e$estimate, fit_gauss$estimate[1], fit_w$estimate[1], fit_g$estimate[1], fit_ln$estimate[1], fit_expower$estimate[1])),
                             param2 = unlist(c(NA, fit_gauss$estimate[2], fit_w$estimate[2], fit_g$estimate[2], fit_ln$estimate[2], fit_expower$estimate[2])),
                             param3 = unlist(c(NA, NA, NA, NA, NA, fit_expower$estimate[3])))
-write.table(paramPicKernel, file = "Tables/paramPicKernel GAMETIC.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramPicKernel, file = "Tables/paramPicKernel GAMETIC.txt", quote = F, col.names = T, row.names = F)
 
 # LogLik and AIC can be the sum of the LogLik/AIC of the binomial model and the conditional model (zero-truncated) estimated separately. (McDowell, 2003)
 
@@ -381,7 +381,7 @@ quantile(boot_scale, 0.975)
 paramPic[2,] = c("Shape", mean(boot_shape), quantile(boot_shape, threshold), quantile(boot_shape, 1 - threshold))
 paramPic[3,] = c("Scale", mean(boot_scale), quantile(boot_scale, threshold), quantile(boot_scale, 1 -threshold))
 paramPic
-write.table(paramPic, file = "Tables/ParamPic GAMETIC.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramPic, file = "Tables/ParamPic GAMETIC.txt", quote = F, col.names = T, row.names = F)
 
 #-------------------------
 # Goodness of fit plots
@@ -622,7 +622,7 @@ paramThuKernel = data.frame(dist = c("exp", "norm", "weibull", "gamma", "lnorm",
                             param1 = unlist(c(fit_e$estimate, fit_gauss$estimate[1], fit_w$estimate[1], fit_g$estimate[1], fit_ln$estimate[1], fit_expower$estimate[1])),
                             param2 = unlist(c(NA, fit_gauss$estimate[2], fit_w$estimate[2], fit_g$estimate[2], fit_ln$estimate[2], fit_expower$estimate[2])),
                             param3 = unlist(c(NA, NA, NA, NA, NA, fit_expower$estimate[3])))
-write.table(paramThuKernel, file = "Tables/ParamThuKernel GAMETIC.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramThuKernel, file = "Tables/ParamThuKernel GAMETIC.txt", quote = F, col.names = T, row.names = F)
 
 # LogLik and AIC can be the sum of the LogLik/AIC of the binomial model and the conditional model (zero-truncated) estimated separately. (McDowell, 2003)
 
@@ -706,7 +706,7 @@ quantile(boot_scale, 1-threshold)
 paramThu[2,] = c("Shape", mean(boot_shape), quantile(boot_shape, threshold), quantile(boot_shape, 1 - threshold))
 paramThu[3,] = c("Scale", mean(boot_scale), quantile(boot_scale, threshold), quantile(boot_scale, 1 - threshold))
 paramThu
-write.table(paramThu, file = "Tables/ParamThu GAMETIC.txt", quote = F, col.names = T, row.names = F)
+# write.table(paramThu, file = "Tables/ParamThu GAMETIC.txt", quote = F, col.names = T, row.names = F)
 
 #---------------------------------#
 # END
