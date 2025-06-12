@@ -373,7 +373,7 @@ for(i in 1:nrow(info)){
 }
 
 ##### BEGINNING OF THE MODEL
-gc(reset=TRUE) # freeing memory allocation : MCMCPed need a lot of memory
+# gc(reset=TRUE) # freeing memory allocation : MCMCPed need a lot of memory
     # #####
     # # All individuals of 2015 and 2016
     # # 2017 is not taken in this model because it seems to be an impossible configuration

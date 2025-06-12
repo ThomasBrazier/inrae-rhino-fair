@@ -838,7 +838,7 @@ Table1b$Picardy_BIC = c(BIC_gauss,
 
 
 #----------------------------------------------------------------------------#
-# Picardy
+# Thuringia
 #----------------------------------------------------------------------------#
 # Fitting the intercept, the probability of intra-colonial paternity (i.e. null value)
 # with a binomial law
