@@ -340,6 +340,6 @@ mean.dispersal
 p = ggarrange(p1, p2, ncol = 2)
 p
 
-ggsave("Figures/FigS2.jpeg",
-       dpi=320,units="cm",width=26,height=10,
-       create.dir = T)
+# ggsave("Figures/FigS2.jpeg",
+#        dpi=320,units="cm",width=26,height=10,
+#        create.dir = T)
