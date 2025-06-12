@@ -57,7 +57,7 @@ summary(bootdist(fit.weibull,bootmethod = "nonparam", niter = 1000))
 # DISTRIBUTION OF DISTANCES AND FITTED DISPERSAL KERNEL
 #---------------------------------
 
-dyadsObsSelect=read.table(paste(datadirThu,"dyadsObsSelect.txt",sep=""),header=TRUE)
+dyadsObsSelect=read.table(paste("Data/Thu/dyadsObsSelect.txt",sep=""),header=TRUE)
 # Uses the fitdistRplus package
 library(fitdistrplus)
 # Two methods can be used :
@@ -92,75 +92,77 @@ summary(bootdist(fit.weibull,bootmethod = "nonparam", niter = 1000))
 # It is also common practice to use an adjusted version of Pearson's kurtosis, the excess kurtosis, which is the kurtosis minus 3,
 # to provide the comparison to the normal distribution. Some authors use "kurtosis" by itself to refer to the excess kurtosis.
 # For clarity and generality, however, this article follows the non-excess convention and explicitly indicates where excess kurtosis is meant. " (Wikipedia)
+# distPic=read.table("AssignationPic/outputs/distancesDist.txt",header=TRUE)
+# distThu=read.table("AssignationThu/outputs/distancesDist.txt",header=TRUE)
 
-# Selecting data
-Pic = distPic$d[distPic$d > 0 & distPic$dist == "ObsSelect"]
-Thu = distThu$d[distThu$d > 0 & distThu$dist == "ObsSelect"]
-# Figures
-hist(Pic, breaks = 20)
-hist(Thu, breaks = 20)
-
-#---------------------------------------------------------
-# SKEWNESS
-#---------------------------------------------------------
-?skewness
-# Skewness estimated with 'moments' library
-skewness(Pic)
-skewness(Thu)
-
-# Estimate skewness with resampling
-nboot = 1000
-boot = numeric(nboot)
-for (i in 1:nboot) {
-  boot[i] = skewness(sample(Pic, replace = TRUE))
-}
-hist(boot, breaks = 20)
-mean(boot)
-quantile(boot, 0.025)
-quantile(boot, 0.975)
-
-
-nboot = 1000
-boot = numeric(nboot)
-for (i in 1:nboot) {
-  boot[i] = skewness(sample(Thu, replace = TRUE))
-}
-hist(boot, breaks = 20)
-mean(boot)
-quantile(boot, 0.025)
-quantile(boot, 0.975)
-
-#---------------------------------------------------------
-# KURTOSIS
-#---------------------------------------------------------
-?kurtosis
-# Kurtosis estimated with 'moments' library
-kurtosis(Pic)
-kurtosis(Thu)
-# Hence excess of kurtosis is simply kurtosis - 3
-kurtosis(Pic) - 3
-kurtosis(Thu) - 3
-
-# Estimate excess kurtosis with resampling
-nboot = 1000
-boot = numeric(nboot)
-for (i in 1:nboot) {
-  boot[i] = kurtosis(sample(Pic, replace = TRUE)) - 3
-}
-hist(boot, breaks = 20)
-mean(boot)
-quantile(boot, 0.025)
-quantile(boot, 0.975)
-
-nboot = 1000
-boot = numeric(nboot)
-for (i in 1:nboot) {
-  boot[i] = kurtosis(sample(Thu, replace = TRUE)) - 3
-}
-hist(boot, breaks = 20)
-mean(boot)
-quantile(boot, 0.025)
-quantile(boot, 0.975)
+# # Selecting data
+# Pic = distPic$d[distPic$d > 0 & distPic$dist == "ObsSelect"]
+# Thu = distThu$d[distThu$d > 0 & distThu$dist == "ObsSelect"]
+# # Figures
+# hist(Pic, breaks = 20)
+# hist(Thu, breaks = 20)
+# 
+# #---------------------------------------------------------
+# # SKEWNESS
+# #---------------------------------------------------------
+# ?skewness
+# # Skewness estimated with 'moments' library
+# skewness(Pic)
+# skewness(Thu)
+# 
+# # Estimate skewness with resampling
+# nboot = 1000
+# boot = numeric(nboot)
+# for (i in 1:nboot) {
+#   boot[i] = skewness(sample(Pic, replace = TRUE))
+# }
+# hist(boot, breaks = 20)
+# mean(boot)
+# quantile(boot, 0.025)
+# quantile(boot, 0.975)
+# 
+# 
+# nboot = 1000
+# boot = numeric(nboot)
+# for (i in 1:nboot) {
+#   boot[i] = skewness(sample(Thu, replace = TRUE))
+# }
+# hist(boot, breaks = 20)
+# mean(boot)
+# quantile(boot, 0.025)
+# quantile(boot, 0.975)
+# 
+# #---------------------------------------------------------
+# # KURTOSIS
+# #---------------------------------------------------------
+# ?kurtosis
+# # Kurtosis estimated with 'moments' library
+# kurtosis(Pic)
+# kurtosis(Thu)
+# # Hence excess of kurtosis is simply kurtosis - 3
+# kurtosis(Pic) - 3
+# kurtosis(Thu) - 3
+# 
+# # Estimate excess kurtosis with resampling
+# nboot = 1000
+# boot = numeric(nboot)
+# for (i in 1:nboot) {
+#   boot[i] = kurtosis(sample(Pic, replace = TRUE)) - 3
+# }
+# hist(boot, breaks = 20)
+# mean(boot)
+# quantile(boot, 0.025)
+# quantile(boot, 0.975)
+# 
+# nboot = 1000
+# boot = numeric(nboot)
+# for (i in 1:nboot) {
+#   boot[i] = kurtosis(sample(Thu, replace = TRUE)) - 3
+# }
+# hist(boot, breaks = 20)
+# mean(boot)
+# quantile(boot, 0.025)
+# quantile(boot, 0.975)
 
 
 #---------------------------------#
