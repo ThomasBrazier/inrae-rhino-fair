@@ -37,9 +37,9 @@ tabSensitivity=sensitivityResults(path=c("simRandomPop",
                                          "simRandomPopIncomplete"),30)
 View(tabSensitivity)
 
-tabSensitivity=sensitivityResultsMothers(path=c("simRandomPop",
-                                         "simRandomPopIncomplete"),30)
-View(tabSensitivity)
+# tabSensitivity=sensitivityResultsMothers(path=c("simRandomPop",
+#                                          "simRandomPopIncomplete"),30)
+# View(tabSensitivity)
 
 #-----------------------------#
 # CONSTRUCTION DE LA DISTRIBUTION DE LA STAT ~ NOMBRE DE RUNS

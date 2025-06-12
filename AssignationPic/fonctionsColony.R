@@ -987,13 +987,13 @@ Rsuccess=function(){
 
 empiricalResultsWithInfo=function(){
   
-  paternity=constructResults(path="Colony79lociSansM399/",excl=0.3)
-  paternity2=constructResults(path="Colony99loci/",excl=0.3)
+  paternity=constructResults(path="outputs/Colony79lociSansM399/",excl=0.3)
+  paternity2=constructResults(path="outputs/Colony99loci/",excl=0.3)
   Paternities=combineParentageMethods("all",sex="M")
   descResultsM=describeResults(Paternities)
   
-  maternity=constructResultsMums(path="Colony79lociSansM399/",excl=0.3)
-  maternity2=constructResultsMums(path="Colony99loci/",excl=0.3)
+  maternity=constructResultsMums(path="outputs/Colony79lociSansM399/",excl=0.3)
+  maternity2=constructResultsMums(path="outputs/Colony99loci/",excl=0.3)
   Maternities=combineParentageMethods("all",sex='F')
   descResultsF=describeResults(Maternities)
   
@@ -1024,7 +1024,7 @@ empiricalResultsWithInfo=function(){
   
   
   # Export
-  write.table(dyads,paste(dir,"Pic_resultsWithInfo.txt",sep=""),col.names=TRUE,row.names=FALSE)
+  write.table(dyads,paste("Pic_resultsWithInfo.txt",sep=""),col.names=TRUE,row.names=FALSE)
   return(dyads)
 }
 
