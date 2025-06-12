@@ -55,8 +55,8 @@ info = read.table("../Data/Pic/uniqueGenotypesWithInfo.txt", h = T)
 
 # Make it on the dataset with individuals with at least 7/9 loci, without colony M399
 # and the dataset with only individuals with 9/9 loci
-paternity=constructResults(path="Colony79lociSansM399/",excl=0.3)
-paternity2=constructResults(path="Colony99loci/",excl=0.3)
+paternity=constructResults(path="outputs/Colony79lociSansM399/",excl=0.3)
+paternity2=constructResults(path="outputs/Colony99loci/",excl=0.3)
 # OR
 # paternity=constructResults(path="Colony79lociSansM399/",excl=0.003)
 # paternity2=constructResults(path="Colony99loci/",excl=0.003)
@@ -97,8 +97,8 @@ Paternities=combineParentageMethods("all",sex="M")
 write.table(Paternities,"Paternities.txt",col.name=TRUE,row.names=TRUE)
 
 # MATERNITES
-maternity=constructResultsMums(path="Colony79lociSansM399/",excl=0.3)
-maternity2=constructResultsMums(path="Colony99loci/",excl=0.3)
+maternity=constructResultsMums(path="outputs/Colony79lociSansM399/",excl=0.3)
+maternity2=constructResultsMums(path="outputs/Colony99loci/",excl=0.3)
 descResults=describeResults(maternity)
 
 Maternities=combineParentageMethods("all",sex='F')
@@ -122,7 +122,7 @@ empiricalResultsWithInfo()
 #   A PARTIR DE N RUNS DE COLONY
 #-------------------------------#
 descResults=describeResults(Paternities)
-write.table(descResults,paste(Rdir,"Assignation/resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
+write.table(descResults,paste("resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
 
 length(unique(descResults$offspring)) # nombre de juveniles
 length(unique(descResults$father)) # nombre de peres
@@ -350,195 +350,200 @@ write.table(dyadsObs,"dyadsObsSelect.txt",col.names=TRUE,row.names=FALSE)
 # And then rerun it with a threshold of 0
 write.table(dyadsObs,"dyadsObs.txt",col.names=TRUE,row.names=FALSE)
 
-#-------------------------------#
-#   MEAN DISPERSAL DISTANCE
-#     BOOTSTRAP
-#-------------------------------
-# Intervalle de confiance de la moyenne : calcul par bootstrap
-#########################
 
-#creation d'un vecteur "boots" comprenant 1000 elements, pour le moment tous des "0"
-boots=numeric(10000)
-#petite boucle qui va reechantillonner 1000 fois avec remise les donnees comprises dans
-#le vecteur dyadsObs$distance, et calculer a chaque fois la moyenne des valeurs reechantillonnees
-for (i in 1:10000){
-  boots[i]=mean(sample(dyadsObs$distance,replace=T))
-}
-#trace l'histogramme de boot
-hist(boots)
-#calcule l'intervalle de confiance comme les 2,5% et 97,5% percentiles de la distribution
-#de boots
-limBoot1=quantile(boots,c(.025,.975))
-limBoot1
-ICDispersal=limBoot1
-abline(v=limBoot1,col="red")
-#calcule la moyenne, l'ecart-type et l'erreur standard apres bootstrap et les range dans
-#des variables
-mboot=mean(boots)
-mboot
-meanDispersal=mboot
-etboot=sqrt(var(boots))
-etboot
-mboot+c(-1,1)*qnorm(1-0.025)*etboot
-etDisperal=etboot
+##############################################################
+# Below is experimental - not required
+##############################################################
 
-
-#-------------------------------#
-#   GRAPH
-#-------------------------------
-
-####### Import data
-# ALL NECESSARY DATA IS INCLUDED IN THIS FILES WRITEN EACH TIME YOU RUNNED THE PREVIOUS SCRIPT.
-# YOU DON'T HAVE TO RERUN PREVIOUS SCRIPT FOR COMPUTING THE PLOT
-dyadsH0=read.table("dyadsH0.txt",header=TRUE)
-dyadsObsSelect=read.table("dyadsObsSelect.txt",header=TRUE)
-dyadsObs=read.table("dyadsObs.txt",header=TRUE)
-meanDispersal=11.32188
-icH0=read.table("icH0.txt",header=TRUE)
-
-##### Fitted distribution are estimated in the Dispersal kernel directory
-# Cumulative density function from fitdistrplus and exponential distribution
-z=seq(0,100,by=0.01)
-lambda=0.10013465
-lambdaInf=0.07614281
-lambdaSup=0.13780406
-yfit=function( z ){1-exp(-1*lambda*z)}
-yfitInf=function( z ){1-exp(-1*lambdaInf*z)}
-yfitSup=function( z ){1-exp(-1*lambdaSup*z)}
-# Cumulative density function from fitdistrplus and gamma distribution
-a=1
-b=9.970022
-yfitGamma=function( z ){pgamma(z,shape=a,scale=b)}
-# Cumulative density function from MasterBayes estimates
-lambda2=0.4704699
-lambda2Inf=0.8413
-lambda2Sup=0.2828
-ybayes=function( z ){1-exp(-1*lambda2*z)}
-ybayesInf=function( z ){1-exp(-1*lambda2Inf*z)}
-ybayesSup=function( z ){1-exp(-1*lambda2Sup*z)}
-
-#####################
-# DYADS RELATIVE FREQUENCY IN FUNCTION OF DISTANCE
-#####################
-df=data.frame(d=c(sort(dyadsH0$distance),sort(dyadsObs$distance),sort(dyadsObsSelect$distance)),
-              freq=c(seq(1,length(dyadsH0$distance),1)/length(dyadsH0$distance),seq(1,length(dyadsObs$distance),1)/length(dyadsObs$distance),seq(1,length(dyadsObsSelect$distance),1)/length(dyadsObsSelect$distance)),
-              dist=c(rep("H0",length(dyadsH0$distance)),rep("Obs",length(dyadsObs$distance)),rep("ObsSelect",length(dyadsObsSelect$distance)))
-              )
-write.table(df,"distancesDist.txt",row.names=FALSE,col.names=TRUE)
-df1=df[which(df$dist=="H0"),]
-df2=df[which(df$dist=="Obs"),]
-df3=df[which(df$dist=="ObsSelect"),]
-
-ggplot(data=df1, aes(x=d, y=freq)) +
-  stat_function(fun = yfit)+
-  stat_function(fun = yfitInf,lty=2)+
-  stat_function(fun = yfitSup,lty=2)+
-  # stat_function(fun = yfitGamma,size=1.5,lty=3)+
-  stat_function(fun = ybayes,colour="grey")+
-  stat_function(fun = ybayesInf,colour="grey",lty=2)+
-  stat_function(fun = ybayesSup,colour="grey",lty=2)+
-  # geom_point(aes(color="expected"),size=4)+
-  geom_ribbon(data=icH0,aes(x=distance,y=meanFreq,ymin=lowerIC, ymax=upperIC),alpha=0.5) +
-  # geom_point(data=df2,aes(color="observed"),size=4) +
-  geom_point(data=df3,aes(color="observed with selection")) +
-  # geom_line(data=icH0,aes(x=distance,y=lowerIC),color="grey",size=1.5) +
-  # geom_line(data=icH0,aes(x=distance,y=upperIC),color="grey",size=1.5) +
-  scale_colour_manual(values=c("black"))+
-  ylim(0,1) +
-  # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
-  # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
-  xlab("Geographic distance (km)") + ylab("Dyads relative frequency") +
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-        axis.title.x = element_text(color="black", size=14),
-        axis.title.y = element_text(color="black", size=14),
-        axis.text=element_text(size=14, colour="black"),
-        legend.key = element_rect(fill = "white", size = 1),
-        legend.key.height = unit(2,"line"),
-        legend.key.width = unit(5,"line"),
-        legend.text=element_text(size=14),
-        legend.title=element_text(size=14),
-        legend.position='none')
-
-# ggsave(paste(graphdir,"/Distribution of offspring-father distances PicAll.tiff",sep=""),
-#        device="tiff",dpi=320,units="cm",width=19,height=13)
-
-################
-# Violin plots
-# df=rbind(df1[,c(1,3)],df2[,c(1,3)])
-# ggplot(data=df, aes(x=dist, y=d,color=dist)) +
-#   geom_violin(size=2)+
-#   geom_boxplot(width=0.1) +
-#   ggtitle(paste("Distribution of offspring-father distances\n(n=",length(dyadsObs$distance),")"))+
-#   xlab("Distribution") + ylab("Distance (km)") +
-#   scale_y_continuous(breaks=c(0,10,20,30,40,50,60),limits=c(0,60)) +
+# #-------------------------------#
+# #   MEAN DISPERSAL DISTANCE
+# #     BOOTSTRAP
+# #-------------------------------
+# # Intervalle de confiance de la moyenne : calcul par bootstrap
+# #########################
+# 
+# #creation d'un vecteur "boots" comprenant 1000 elements, pour le moment tous des "0"
+# boots=numeric(10000)
+# #petite boucle qui va reechantillonner 1000 fois avec remise les donnees comprises dans
+# #le vecteur dyadsObs$distance, et calculer a chaque fois la moyenne des valeurs reechantillonnees
+# for (i in 1:10000){
+#   boots[i]=mean(sample(dyadsObs$distance,replace=T))
+# }
+# #trace l'histogramme de boot
+# hist(boots)
+# #calcule l'intervalle de confiance comme les 2,5% et 97,5% percentiles de la distribution
+# #de boots
+# limBoot1=quantile(boots,c(.025,.975))
+# limBoot1
+# ICDispersal=limBoot1
+# abline(v=limBoot1,col="red")
+# #calcule la moyenne, l'ecart-type et l'erreur standard apres bootstrap et les range dans
+# #des variables
+# mboot=mean(boots)
+# mboot
+# meanDispersal=mboot
+# etboot=sqrt(var(boots))
+# etboot
+# mboot+c(-1,1)*qnorm(1-0.025)*etboot
+# etDisperal=etboot
+# 
+# 
+# #-------------------------------#
+# #   GRAPH
+# #-------------------------------
+# 
+# ####### Import data
+# # ALL NECESSARY DATA IS INCLUDED IN THIS FILES WRITEN EACH TIME YOU RUNNED THE PREVIOUS SCRIPT.
+# # YOU DON'T HAVE TO RERUN PREVIOUS SCRIPT FOR COMPUTING THE PLOT
+# dyadsH0=read.table("dyadsH0.txt",header=TRUE)
+# dyadsObsSelect=read.table("dyadsObsSelect.txt",header=TRUE)
+# dyadsObs=read.table("dyadsObs.txt",header=TRUE)
+# meanDispersal=11.32188
+# icH0=read.table("icH0.txt",header=TRUE)
+# 
+# ##### Fitted distribution are estimated in the Dispersal kernel directory
+# # Cumulative density function from fitdistrplus and exponential distribution
+# z=seq(0,100,by=0.01)
+# lambda=0.10013465
+# lambdaInf=0.07614281
+# lambdaSup=0.13780406
+# yfit=function( z ){1-exp(-1*lambda*z)}
+# yfitInf=function( z ){1-exp(-1*lambdaInf*z)}
+# yfitSup=function( z ){1-exp(-1*lambdaSup*z)}
+# # Cumulative density function from fitdistrplus and gamma distribution
+# a=1
+# b=9.970022
+# yfitGamma=function( z ){pgamma(z,shape=a,scale=b)}
+# # Cumulative density function from MasterBayes estimates
+# lambda2=0.4704699
+# lambda2Inf=0.8413
+# lambda2Sup=0.2828
+# ybayes=function( z ){1-exp(-1*lambda2*z)}
+# ybayesInf=function( z ){1-exp(-1*lambda2Inf*z)}
+# ybayesSup=function( z ){1-exp(-1*lambda2Sup*z)}
+# 
+# #####################
+# # DYADS RELATIVE FREQUENCY IN FUNCTION OF DISTANCE
+# #####################
+# df=data.frame(d=c(sort(dyadsH0$distance),sort(dyadsObs$distance),sort(dyadsObsSelect$distance)),
+#               freq=c(seq(1,length(dyadsH0$distance),1)/length(dyadsH0$distance),seq(1,length(dyadsObs$distance),1)/length(dyadsObs$distance),seq(1,length(dyadsObsSelect$distance),1)/length(dyadsObsSelect$distance)),
+#               dist=c(rep("H0",length(dyadsH0$distance)),rep("Obs",length(dyadsObs$distance)),rep("ObsSelect",length(dyadsObsSelect$distance)))
+#               )
+# write.table(df,"distancesDist.txt",row.names=FALSE,col.names=TRUE)
+# df1=df[which(df$dist=="H0"),]
+# df2=df[which(df$dist=="Obs"),]
+# df3=df[which(df$dist=="ObsSelect"),]
+# 
+# ggplot(data=df1, aes(x=d, y=freq)) +
+#   stat_function(fun = yfit)+
+#   stat_function(fun = yfitInf,lty=2)+
+#   stat_function(fun = yfitSup,lty=2)+
+#   # stat_function(fun = yfitGamma,size=1.5,lty=3)+
+#   stat_function(fun = ybayes,colour="grey")+
+#   stat_function(fun = ybayesInf,colour="grey",lty=2)+
+#   stat_function(fun = ybayesSup,colour="grey",lty=2)+
+#   # geom_point(aes(color="expected"),size=4)+
+#   geom_ribbon(data=icH0,aes(x=distance,y=meanFreq,ymin=lowerIC, ymax=upperIC),alpha=0.5) +
+#   # geom_point(data=df2,aes(color="observed"),size=4) +
+#   geom_point(data=df3,aes(color="observed with selection")) +
+#   # geom_line(data=icH0,aes(x=distance,y=lowerIC),color="grey",size=1.5) +
+#   # geom_line(data=icH0,aes(x=distance,y=upperIC),color="grey",size=1.5) +
+#   scale_colour_manual(values=c("black"))+
+#   ylim(0,1) +
+#   # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
+#   # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
+#   xlab("Geographic distance (km)") + ylab("Dyads relative frequency") +
 #   theme(axis.line = element_line(colour = "black"),
 #         panel.grid.major = element_blank(),
 #         panel.grid.minor = element_blank(),
 #         panel.border = element_blank(),
 #         panel.background = element_blank(),
-#         plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
-#         axis.title.x = element_text(color="black", size=30),
-#         axis.title.y = element_text(color="black", size=30),
-#         axis.text=element_text(size=26, colour="black"),
+#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+#         axis.title.x = element_text(color="black", size=14),
+#         axis.title.y = element_text(color="black", size=14),
+#         axis.text=element_text(size=14, colour="black"),
 #         legend.key = element_rect(fill = "white", size = 1),
 #         legend.key.height = unit(2,"line"),
 #         legend.key.width = unit(5,"line"),
-#         legend.text=element_text(size=30),
-#         legend.title=element_text(size=30),
+#         legend.text=element_text(size=14),
+#         legend.title=element_text(size=14),
 #         legend.position='none')
-
-# Droite de Henry en quantiles
-# plot(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
-#      y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
-#      xlim=c(0,1),ylim=c(0,1),
-#      main="Droite de Henry entre distributions observées et attendues\ndes distances offspring-father",
-#      xlab="Distribution observ?e",ylab="Distribution H0")
-# abline(0,1)
 # 
-# df=data.frame(H0=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
-#               Obs=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density))
+# # ggsave(paste(graphdir,"/Distribution of offspring-father distances PicAll.tiff",sep=""),
+# #        device="tiff",dpi=320,units="cm",width=19,height=13)
 # 
-# ggplot(data=df, aes(x=H0, y=Obs)) +
-#   geom_point(size=2)+
-#   geom_abline(intercept=0,slope=1) +
-#   ylim(0,1) + xlim(0,1) +
-#   ggtitle(paste("Q-Q plot of distances offspring-father\n (n=",length(dyadsObs$distance),")"))+
-#   xlab("Expected distribution under random mating") + ylab("Observed distribution") +
-#   theme(axis.line = element_line(colour = "black"),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         panel.border = element_blank(),
-#         panel.background = element_blank(),
-#         plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
-#         axis.title.x = element_text(color="black", size=30),
-#         axis.title.y = element_text(color="black", size=30),
-#         axis.text=element_text(size=26, colour="black"),
-#         legend.key = element_rect(fill = "white", size = 1),
-#         legend.key.height = unit(2,"line"),
-#         legend.key.width = unit(5,"line"),
-#         legend.text=element_text(size=30),
-#         legend.title=element_text(size=30))
-
-
-# Test de Kolmogorov
-# Test sur les frequences cumulees de deux distributions
-?ks.test
-#ks.test(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,130,10))$counts/sum(hist(dyadsObs$distance,plot=F,breaks=seq(0,130,10))$counts)),y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,130,10))$counts/sum(hist(dyadsH0$distance,plot=F,breaks=seq(0,130,10))$counts)))
-
-# Test sur les quantiles
-# ks.test(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
-#         y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density))
-ks.test(x=dyadsH0$distance,
-        y=dyadsObsSelect$distance)
-
-# EXCLUSION DES COLONIES
-# excludedCol=c("M399","M1979","M1975","CXSGT","M1079")
-# coordCol=coordCol[which(!(coordCol$Colonie %in% excludedCol) & !(coordCol$Colonie %in% excludedCol)),]
+# ################
+# # Violin plots
+# # df=rbind(df1[,c(1,3)],df2[,c(1,3)])
+# # ggplot(data=df, aes(x=dist, y=d,color=dist)) +
+# #   geom_violin(size=2)+
+# #   geom_boxplot(width=0.1) +
+# #   ggtitle(paste("Distribution of offspring-father distances\n(n=",length(dyadsObs$distance),")"))+
+# #   xlab("Distribution") + ylab("Distance (km)") +
+# #   scale_y_continuous(breaks=c(0,10,20,30,40,50,60),limits=c(0,60)) +
+# #   theme(axis.line = element_line(colour = "black"),
+# #         panel.grid.major = element_blank(),
+# #         panel.grid.minor = element_blank(),
+# #         panel.border = element_blank(),
+# #         panel.background = element_blank(),
+# #         plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
+# #         axis.title.x = element_text(color="black", size=30),
+# #         axis.title.y = element_text(color="black", size=30),
+# #         axis.text=element_text(size=26, colour="black"),
+# #         legend.key = element_rect(fill = "white", size = 1),
+# #         legend.key.height = unit(2,"line"),
+# #         legend.key.width = unit(5,"line"),
+# #         legend.text=element_text(size=30),
+# #         legend.title=element_text(size=30),
+# #         legend.position='none')
+# 
+# # Droite de Henry en quantiles
+# # plot(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
+# #      y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
+# #      xlim=c(0,1),ylim=c(0,1),
+# #      main="Droite de Henry entre distributions observées et attendues\ndes distances offspring-father",
+# #      xlab="Distribution observ?e",ylab="Distribution H0")
+# # abline(0,1)
+# # 
+# # df=data.frame(H0=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
+# #               Obs=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density))
+# # 
+# # ggplot(data=df, aes(x=H0, y=Obs)) +
+# #   geom_point(size=2)+
+# #   geom_abline(intercept=0,slope=1) +
+# #   ylim(0,1) + xlim(0,1) +
+# #   ggtitle(paste("Q-Q plot of distances offspring-father\n (n=",length(dyadsObs$distance),")"))+
+# #   xlab("Expected distribution under random mating") + ylab("Observed distribution") +
+# #   theme(axis.line = element_line(colour = "black"),
+# #         panel.grid.major = element_blank(),
+# #         panel.grid.minor = element_blank(),
+# #         panel.border = element_blank(),
+# #         panel.background = element_blank(),
+# #         plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
+# #         axis.title.x = element_text(color="black", size=30),
+# #         axis.title.y = element_text(color="black", size=30),
+# #         axis.text=element_text(size=26, colour="black"),
+# #         legend.key = element_rect(fill = "white", size = 1),
+# #         legend.key.height = unit(2,"line"),
+# #         legend.key.width = unit(5,"line"),
+# #         legend.text=element_text(size=30),
+# #         legend.title=element_text(size=30))
+# 
+# 
+# # Test de Kolmogorov
+# # Test sur les frequences cumulees de deux distributions
+# ?ks.test
+# #ks.test(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,130,10))$counts/sum(hist(dyadsObs$distance,plot=F,breaks=seq(0,130,10))$counts)),y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,130,10))$counts/sum(hist(dyadsH0$distance,plot=F,breaks=seq(0,130,10))$counts)))
+# 
+# # Test sur les quantiles
+# # ks.test(x=cumsum(hist(dyadsObs$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density),
+# #         y=cumsum(hist(dyadsH0$distance,plot=F,breaks=seq(0,ceiling(max(c(dyadsH0$distance,dyadsObs$distance))),1))$density))
+# ks.test(x=dyadsH0$distance,
+#         y=dyadsObsSelect$distance)
+# 
+# # EXCLUSION DES COLONIES
+# # excludedCol=c("M399","M1979","M1975","CXSGT","M1079")
+# # coordCol=coordCol[which(!(coordCol$Colonie %in% excludedCol) & !(coordCol$Colonie %in% excludedCol)),]
 
 
 

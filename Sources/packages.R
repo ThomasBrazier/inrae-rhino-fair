@@ -16,7 +16,8 @@ package_list = c("devtools",
                  "extraDistr",
                  "fdrtool",
                  "sp",
-                 "distr")
+                 "distr",
+                 "rgdal")
 
 for (p in 1:length(package_list)) {
   if (!(package_list[p] %in% installed.packages())) {
