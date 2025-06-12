@@ -79,7 +79,7 @@ colonynamesPic = levels(samplePic$idcol)[as.numeric(samplePic$idcol)]
 # Add genotypes
 dfPic = cbind(dfPic, samplePic[,2:17])
 # Save the input file
-write.table(dfPic, file = "STRUCTURE/input/inputPic.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
+# write.table(dfPic, file = "STRUCTURE/input/inputPic.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
 
 #---------------------------------------
 # And for Thuringia
@@ -95,7 +95,7 @@ colonynamesThu = levels(sampleThu$idcol)[as.numeric(sampleThu$idcol)]
 # Add genotypes
 dfThu = cbind(dfThu, sampleThu[,2:17])
 # Save the input file
-write.table(dfThu, file = "STRUCTURE/input/inputThu.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
+# write.table(dfThu, file = "STRUCTURE/input/inputThu.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
 
 
 #=================================================
@@ -210,7 +210,7 @@ for (i in 2:10) {
   df = read.table(paste("STRUCTURE/output/Pic/sampling_chain_", i, sep = ""), header = TRUE)
   trace = rbind(trace, df)
 }
-write.table(trace, "STRUCTURE/output/Pic/trace.txt", quote = FALSE, col.names = TRUE, row.names = FALSE)
+# write.table(trace, "STRUCTURE/output/Pic/trace.txt", quote = FALSE, col.names = TRUE, row.names = FALSE)
 tracePic = read.table("STRUCTURE/output/Pic/trace.txt", header = TRUE)
 
 # Load traces from the 10 independant MCMC chains
@@ -221,7 +221,7 @@ for (i in 2:10) {
   df = read.table(paste("STRUCTURE/output/Thu/sampling_chain_", i, sep = ""), header = TRUE)
   trace = rbind(trace, df)
 }
-write.table(trace, "STRUCTURE/output/Thu/trace.txt", quote = FALSE, col.names = TRUE, row.names = FALSE)
+# write.table(trace, "STRUCTURE/output/Thu/trace.txt", quote = FALSE, col.names = TRUE, row.names = FALSE)
 traceThu = read.table("STRUCTURE/output/Thu/trace.txt", header = TRUE)
 
 
@@ -385,12 +385,12 @@ individuals = unique(resPic$father) # List of individuals to retrieve (inferred 
 
 # Run a for loop on the list of individuals
 # Re-init result file
-system("rm STRUCTURE/output/Pic/results.txt")
-for (idind in individuals) {
-  # Copy the lines for individuals of interest in a result file
-  system(paste("grep ' ", idind, " ' STRUCTURE/output/Pic/run", i, "_f >> STRUCTURE/output/Pic/results.txt", sep = ""))
-}
-system("cat STRUCTURE/output/Pic/results.txt")
+# system("rm STRUCTURE/output/Pic/results.txt")
+# for (idind in individuals) {
+#   # Copy the lines for individuals of interest in a result file
+#   system(paste("grep ' ", idind, " ' STRUCTURE/output/Pic/run", i, "_f >> STRUCTURE/output/Pic/results.txt", sep = ""))
+# }
+# system("cat STRUCTURE/output/Pic/results.txt")
 
 PopAssignPic = read.table("STRUCTURE/output/Pic/results.txt", header = FALSE)
 PopAssignPic = PopAssignPic[,-c(1, 3, 5)] # Remove unwanted columns
@@ -507,12 +507,12 @@ individuals = unique(resThu$father) # List of individuals to retrieve (inferred 
 
 # Run a for loop on the list of individuals
 # Re-init result file
-system("rm STRUCTURE/output/Thu/results.txt")
-for (idind in individuals) {
-  # Copy the lines for individuals of interest in a result file
-  system(paste("grep ' ", idind, " ' STRUCTURE/output/Thu/run", i, "_f >> STRUCTURE/output/Thu/results.txt", sep = ""))
-}
-system("cat STRUCTURE/output/Thu/results.txt")
+# system("rm STRUCTURE/output/Thu/results.txt")
+# for (idind in individuals) {
+#   # Copy the lines for individuals of interest in a result file
+#   system(paste("grep ' ", idind, " ' STRUCTURE/output/Thu/run", i, "_f >> STRUCTURE/output/Thu/results.txt", sep = ""))
+# }
+# system("cat STRUCTURE/output/Thu/results.txt")
 
 PopAssignThu = read.table("STRUCTURE/output/Thu/results.txt", header = FALSE)
 PopAssignThu = PopAssignThu[,-c(1, 3, 5)] # Remove unwanted columns
