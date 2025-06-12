@@ -1,0 +1,25 @@
+#!/bin/bash
+#Script Torque
+#PBS -l ncpus=2
+#PBS -l mem=10000mb
+#PBS -l cput=200:00:00
+#PBS -V
+#PBS -m abe
+#PBS -M thomas.brazier@inra.fr
+#PBS -l walltime=200:00:00
+#PBS -q batch
+# cri_job_type = serial
+# cri_initialdir =	/usr/local/torque/SERIAL/IN
+# cri_finaldir =	/usr/local/torque/SERIAL/OUT
+cd /home/users/tbrazier/Thuringia99
+
+colony2s.gnu.out IFN:Colony11.Dat
+colony2s.gnu.out IFN:Colony12.Dat
+colony2s.gnu.out IFN:Colony13.Dat
+colony2s.gnu.out IFN:Colony14.Dat
+colony2s.gnu.out IFN:Colony15.Dat
+colony2s.gnu.out IFN:Colony16.Dat
+colony2s.gnu.out IFN:Colony17.Dat
+colony2s.gnu.out IFN:Colony18.Dat
+colony2s.gnu.out IFN:Colony19.Dat
+colony2s.gnu.out IFN:Colony20.Dat
