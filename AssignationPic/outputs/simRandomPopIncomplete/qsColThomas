@@ -1,0 +1,24 @@
+#!/bin/bash
+                       #Script Torque
+                       #PBS -l ncpus=2
+                       #PBS -l mem=10000mb
+                       #PBS -l cput=200:00:00
+                       #PBS -V
+                       #PBS -m abe
+                       #PBS -M thomas.brazier@inra.fr
+                       #PBS -l walltime=200:00:00
+                       #PBS -q batch
+                       # cri_job_type = serial
+                       # cri_initialdir =	/usr/local/torque/SERIAL/IN
+                       # cri_finaldir =	/usr/local/torque/SERIAL/OUT
+cd /home/users/tbrazier/simRandomPopIncomplete
+colony2s.gnu.out IFN:COLONY2_1.DAT
+colony2s.gnu.out IFN:COLONY2_2.DAT
+colony2s.gnu.out IFN:COLONY2_3.DAT
+colony2s.gnu.out IFN:COLONY2_4.DAT
+colony2s.gnu.out IFN:COLONY2_5.DAT
+colony2s.gnu.out IFN:COLONY2_6.DAT
+colony2s.gnu.out IFN:COLONY2_7.DAT
+colony2s.gnu.out IFN:COLONY2_8.DAT
+colony2s.gnu.out IFN:COLONY2_9.DAT
+colony2s.gnu.out IFN:COLONY2_10.DAT

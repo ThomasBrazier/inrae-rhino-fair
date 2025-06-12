@@ -1,0 +1,35 @@
+#!/bin/bash
+                       #Script Torque
+                       #PBS -l ncpus=2
+                       #PBS -l mem=10000mb
+                       #PBS -l cput=200:00:00
+                       #PBS -V
+                       #PBS -m abe
+                       #PBS -M thomas.brazier@inra.fr
+                       #PBS -l walltime=200:00:00
+                       #PBS -q batch
+                       # cri_job_type = serial
+                       # cri_initialdir =	/usr/local/torque/SERIAL/IN
+                       # cri_finaldir =	/usr/local/torque/SERIAL/OUT
+cd /home/users/tbrazier/simRandomPopIncomplete
+
+colony2s.gnu.out IFN:COLONY2_31.DAT
+colony2s.gnu.out IFN:COLONY2_32.DAT
+colony2s.gnu.out IFN:COLONY2_33.DAT
+colony2s.gnu.out IFN:COLONY2_34.DAT
+colony2s.gnu.out IFN:COLONY2_35.DAT
+colony2s.gnu.out IFN:COLONY2_36.DAT
+colony2s.gnu.out IFN:COLONY2_37.DAT
+colony2s.gnu.out IFN:COLONY2_38.DAT
+colony2s.gnu.out IFN:COLONY2_39.DAT
+colony2s.gnu.out IFN:COLONY2_40.DAT
+colony2s.gnu.out IFN:COLONY2_41.DAT
+colony2s.gnu.out IFN:COLONY2_42.DAT
+colony2s.gnu.out IFN:COLONY2_43.DAT
+colony2s.gnu.out IFN:COLONY2_44.DAT
+colony2s.gnu.out IFN:COLONY2_45.DAT
+colony2s.gnu.out IFN:COLONY2_46.DAT
+colony2s.gnu.out IFN:COLONY2_47.DAT
+colony2s.gnu.out IFN:COLONY2_48.DAT
+colony2s.gnu.out IFN:COLONY2_49.DAT
+colony2s.gnu.out IFN:COLONY2_50.DAT
