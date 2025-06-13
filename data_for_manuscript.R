@@ -65,6 +65,18 @@ max(table(genotypes$idcol))
 
 genotypes = read.table("Data/Thu/uniqueGenotypesWithInfo.txt", header = TRUE)
 
+# Names of colonies to keep
+# [1] "Thu20" "Thu21" "Thu22" "Thu23" "Thu25" "Thu26" "Thu27" "Thu28" "Thu29" "Thu30" "Thu31" "Thu32" "Thu33" "Thu34" "Thu35" "Thu36"
+# [17] "Thu37" "Thu38" "Thu39"
+
+table(genotypes$idcol)
+
+# Remove Thu 24 (low sample size)
+# Remove Thu42 and Thu49 (isolated colonies outside the sample range)
+
+# From 22 to 19 colonies
+genotypes = genotypes[!(genotypes$idcol %in% c("Thu42", "Thu24", "Thu48")),]
+
 # number of genotypes
 nrow(genotypes)
 # Numbers of juveniles and adults
@@ -82,10 +94,11 @@ table(n_incomplete)
 
 # Mean sample size of a colony
 table(genotypes$idcol)
-# Thu42 was excluded (1 individual)
-mean(table(genotypes$idcol[which(genotypes$idcol != "Thu42")]))
-min(table(genotypes$idcol[which(genotypes$idcol != "Thu42")]))
-max(table(genotypes$idcol[which(genotypes$idcol != "Thu42")]))
+length(unique(genotypes$idcol))
+
+mean(table(genotypes$idcol))
+min(table(genotypes$idcol))
+max(table(genotypes$idcol))
 
 
 

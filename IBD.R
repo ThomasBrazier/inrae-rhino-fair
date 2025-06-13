@@ -37,7 +37,7 @@ allel=allel[-which(allel$sexe=="M"),]
 allel=allel[-which(allel$ageWhenFirstCaptur=="Juv"),]
 
 # Remove individuals with uncomplete genotypes
-allel=allel[!apply(allel[,2:17],1,function (x) 0 %in% x),]
+# allel=allel[!apply(allel[,2:17],1,function (x) 0 %in% x),]
 
 colonies = as.character(allel$idcol)
 
@@ -63,7 +63,9 @@ ploidy(matAlleles)
 # Pairwise Fst between colonies
 # matGen=adegenet::pairwise.fst(matAlleles,res.type="matrix")
 # Since a change in adegenet, the function moved to hierfstat
-matGen = genet.dist(matAlleles, method = "Nei87")
+# matGen = genet.dist(matAlleles, method = "WC84")
+matGen = genet.dist(genind2hierfstat(matAlleles), method = "WC84")
+
 # matGen = pairwise.neifst(matAlleles)
 matGen
 
@@ -130,14 +132,14 @@ mod$coefficients[1]
 mod$coefficients[2]
 
 #-------------------------------#
-# GRAPH GGPLOT OF IBD PATTERN (13 colonies)
+# PLOT OF IBD PATTERN (13 colonies)
 
 p1 = ggplot(data=df, aes(x=Distance, y=GeneDistance)) +
   geom_point(size=2)+
   geom_abline(intercept=mod$coefficients[1],slope=mod$coefficients[2],size=2) +
   xlab("Geographic distance (km)") + ylab("Genetic distance Fst/(1-Fst)") +
-  # scale_x_continuous(breaks=log(c(2,5,10,25)), labels=c(2,5,10,25)) +
-  # scale_y_continuous(breaks=c(0, 0.006, 0.012), labels=c(0, 0.006, 0.012)) +
+  scale_x_continuous(breaks=log(c(1, 2,5,10,25)), labels=c(0, 2,5,10,25), limits = log(c(1, 30))) +
+  scale_y_continuous(breaks=c(0, 0.02, 0.04, 0.06), labels=c(0, 0.02, 0.04, 0.06), limits = c(0, 0.07)) +
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -166,11 +168,11 @@ p1
 # n effective = 10% * total = 400 or 570/675
 # area of the sampling site = 500km2 (forêt) ou 2500km2 (conservatif, comprend tous les points de la zone)
 # 
-# d=c(400/500,400/2500) # Effective density (ind.km-2)
+d=c(400/500,400/2500) # Effective density (ind.km-2)
 # p=c(0.005826133,0.01095223) # slope of IBD regression (for the subset of 13 colonies or 17 colonies)
 mod$coefficients
 
-d = 400/500
+# d = 400/500
 p = mod$coefficients[2]
 # Formula the mean dispersal estimated from slope of IBD regression, given by Rousset (1997)
 mean.dispersal = sqrt(1/(4*d*pi*p))
@@ -180,15 +182,14 @@ mean.dispersal
 #==========================================================#
 # Thuringia ----
 #==========================================================#
+# IBD for the adult females of the 19 colonies in Thuringia.
 
 #----------------------------------------------------------#
 # MATRIX OF GENETIC DISTANCES
 
-allel=read.table("Data/Thu/uniqueGenotypesWithInfo.txt",h=T)
-allel$idcol = as.factor(allel$idcol)
-
-
-allel = allel[allel$idcol != "Thu42",]
+allel=read.table("Data/Thu/uniqueGenotypesWithInfo.txt",
+                 h=T)
+# allel$idcol = as.factor(allel$idcol)
 
 # enlever les males (femelles sont liees a la colonie beaucoup plus que les males)
 allel=allel[-which(allel$sexe=="M"),]
@@ -197,7 +198,20 @@ allel=allel[-which(allel$ageWhenFirstCaptur=="Juv"),]
 # Supprimer les individus avec un genotype incomplet
 # i.e. individus avec un 0 parmi tous les alleles
 #Enlever les individus avec missing data
-allel=allel[!apply(allel[,2:17],1,function (x) 0 %in% x),]
+# allel=allel[!apply(allel[,2:17],1,function (x) 0 %in% x),]
+
+
+table(allel$idcol)
+length(unique(allel$idcol))
+
+# Remove Thu24 because only two samples
+allel = allel[allel$idcol != "Thu24",]
+
+table(allel$idcol)
+length(unique(allel$idcol))
+
+
+
 # Construction de l'objet genind qui sera transmis pour la Fst
 colonies = as.character(allel$idcol)
 
@@ -210,21 +224,23 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
                        rhd102 = paste(allel[,14], allel[,15], sep = "/"),
                        rhd103 = paste(allel[,16], allel[,17], sep = "/"))
 
-
-
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
                        type="codom",
                        pop=colonies)
 matAlleles
+table(colonies)
 ploidy(matAlleles)
 
-matGen = genet.dist(matAlleles, method = "Nei87")
-
+matGen = genet.dist(genind2hierfstat(matAlleles), method = "WC84")
 
 # Distance genetique selon Rousset (1997)
-matGen=matGen/(1-matGen)
+matGen = matGen/(1-matGen)
+
+matGen
+max(matGen)
+hist(matGen)
 
 #-------------------------------#
 # MATRICE DES DISTANCES GEOGRAPHIQUES
@@ -233,21 +249,33 @@ matGen=matGen/(1-matGen)
 # Calcul d'une matrice de distances
 coordCol=read.table("Data/Thu/coordThu.txt",h=T)
 
+plot(coordCol$Long, coordCol$Lat)
+text(coordCol$Long, coordCol$Lat, coordCol$Colony)
+
+coordCol = coordCol[coordCol$Colony %in% colonies,]
+
+plot(coordCol$Long, coordCol$Lat)
+text(coordCol$Long, coordCol$Lat, coordCol$Colony)
+
+coordCol$Colonie
+
 coordCol = coordCol[coordCol$Colony != "Thu42",]
 
 lvl=unique(colonies)
+
 # Creation du fichier contenant les coordonnees dans le bon ordre
 # !!!! Meme ordre que dans la matrice des distances genetiques matGen
 coord=data.frame(Colonie=rep(NA,length(lvl)),
                  Long=rep(NA,length(lvl)),
                  Lat=rep(NA,length(lvl)))
 coord$Colonie=lvl
+
 for (i in 1:nrow(coord)) {
   coord$Long[i]=coordCol$Long[which(coordCol$Colony==coord$Colonie[i])]
   coord$Lat[i]=coordCol$Lat[which(coordCol$Colony==coord$Colonie[i])]
 }
 
-matGeo=matrix(nrow=nrow(coord),ncol=nrow(coord)) # Matrix de 17*17 -> 17 colonies prises en compte
+matGeo=matrix(nrow=nrow(coord),ncol=nrow(coord))
 colnames(matGeo)=coord$Colonie
 rownames(matGeo)=coord$Colonie
 # Calcul des distances paire a paire
@@ -276,8 +304,8 @@ mantel.rtest(as.dist(matGeo,diag=FALSE,upper=FALSE),
 # df=data.frame(Distance=as.vector(matGeo[lower.tri(matGeo,diag=FALSE)]),GeneDistance=as.vector(matGen[lower.tri(matGen,diag=FALSE)]))
 df=data.frame(Distance=as.vector(matGeo[lower.tri(matGeo,diag=FALSE)]),GeneDistance=as.vector(matGen))
 
-##### KEEPING ONLY DISTANCES INFERIOR TO 30KM (SHORT SCALE)
-df = df[which(df$Distance < log(30)),]
+##### KEEPING ONLY DISTANCES INFERIOR TO 25KM (SHORT SCALE, same scale as IBD in Pic)
+df = df[which(df$Distance < log(25)),]
 
 #df=data.frame(Distance=as.vector(Dgeo),GeneDistance=as.vector(Dgen))
 plot(df)
@@ -290,15 +318,15 @@ mod$coefficients[2]
 # save(mod,file="Data/Pic/modIBDPic.Rdata")
 
 #-------------------------------#
-# GRAPH GGPLOT OF IBD PATTERN
+# GGPLOT OF IBD PATTERN
 
-# export 1800x1300
 p2 = ggplot(data=df, aes(x=Distance, y=GeneDistance)) +
   geom_point(size=2)+
   geom_abline(intercept=mod$coefficients[1],slope=mod$coefficients[2],size=2) +
   xlab("Geographic distance (km)") + ylab("") +
-  scale_x_continuous(breaks=log(c(2,5,10,25)), labels=c(2,5,10,25)) +
-  # scale_y_continuous(breaks=c(0, 0.02, 0.04, 0.06), labels=c(0, 0.02, 0.04, 0.06)) +
+  scale_x_continuous(breaks=log(c(1, 2,5,10,25)), labels=c(0, 2,5,10,25), limits = log(c(1, 30))) +
+  scale_y_continuous(breaks=c(0, 0.02, 0.04, 0.06), labels=c(0, 0.02, 0.04, 0.06), limits = c(0, 0.07)) +
+  # ylim(0, 0.07) +
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -340,6 +368,6 @@ mean.dispersal
 p = ggarrange(p1, p2, ncol = 2)
 p
 
-# ggsave("Figures/FigS2.jpeg",
-#        dpi=320,units="cm",width=26,height=10,
-#        create.dir = T)
+ggsave("Figures/FigS2.jpeg",
+       dpi=320,units="cm",width=26,height=10,
+       create.dir = T)
