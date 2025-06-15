@@ -22,7 +22,7 @@ source("Sources/packages.R")
 #=============================================================================#
 
 #-----------------------------------------------------------------------------#
-# Picardy
+# Picardy ----
 #-----------------------------------------------------------------------------#
 # Of the 3,706 unique genotypes in Picardy (France), 1,602 individuals were labelled as offspring (43%). 72% of
 # individuals considered as adults were females (58% to 92% females depending on colony). 21% of individuals
@@ -30,7 +30,17 @@ source("Sources/packages.R")
 # individuals for cumulated years 2013-2016, ranging from a minimal sample size of 53 bats to a maximal
 # sample size of 746 bats.
 
+colonies = read.table("Data/Pic/coordPic.txt", header = TRUE)
 genotypes = read.table("Data/Pic/uniqueGenotypesWithInfo.txt", header = TRUE)
+
+# Colonies
+table(genotypes$idcol)
+
+nrow(colonies)
+
+ggplot(colonies, aes(x = Long, y = Lat)) +
+  geom_point() +
+  geom_text_repel(aes(label = Colonie))
 
 # number of genotypes
 nrow(genotypes)
@@ -56,26 +66,38 @@ max(table(genotypes$idcol))
 
 
 #-----------------------------------------------------------------------------#
-# Thuringia
+# Thuringia ----
 #-----------------------------------------------------------------------------#
 # In Thuringia (Germany), there were 3,913 unique genotypes with 2,128 potential
 # offspring (54%). 62% of individuals considered as adults were females. 19% of individuals had an incomplete
 # genotype (1 or 2 missing loci). The mean sample size per colony was 126±22 (s.e.m.) for years 2015-2017
 # (range: 10 to 385).
 
+colonies = read.table("Data/Thu/coordThu.txt", header = TRUE)
 genotypes = read.table("Data/Thu/uniqueGenotypesWithInfo.txt", header = TRUE)
+
+# Colonies
+table(genotypes$idcol)
+
+# Remove Thu42 (low sample size)
 
 # Names of colonies to keep
 # [1] "Thu20" "Thu21" "Thu22" "Thu23" "Thu25" "Thu26" "Thu27" "Thu28" "Thu29" "Thu30" "Thu31" "Thu32" "Thu33" "Thu34" "Thu35" "Thu36"
-# [17] "Thu37" "Thu38" "Thu39"
+# [17] "Thu37" "Thu38" "Thu39" "Thu24" "Thu49"
+col_subset = c("Thu20", "Thu21", "Thu22", "Thu23", "Thu25", "Thu26",
+               "Thu27", "Thu28", "Thu29", "Thu30", "Thu31", "Thu32",
+               "Thu33", "Thu34", "Thu35", "Thu36", "Thu37", "Thu38", "Thu39",
+               "Thu24", "Thu49")
+colonies = colonies[which(colonies$Colony %in% col_subset),]
 
-table(genotypes$idcol)
+nrow(colonies)
 
-# Remove Thu 24 (low sample size)
-# Remove Thu42 and Thu49 (isolated colonies outside the sample range)
+ggplot(colonies, aes(x = Long, y = Lat)) +
+  geom_point() +
+  geom_text_repel(aes(label = Colony), max.overlaps = 25)
 
-# From 22 to 19 colonies
-genotypes = genotypes[!(genotypes$idcol %in% c("Thu42", "Thu24", "Thu48")),]
+
+genotypes = genotypes[which(genotypes$idcol %in% col_subset),]
 
 # number of genotypes
 nrow(genotypes)
@@ -94,6 +116,7 @@ table(n_incomplete)
 
 # Mean sample size of a colony
 table(genotypes$idcol)
+# Number of colonies
 length(unique(genotypes$idcol))
 
 mean(table(genotypes$idcol))
@@ -212,7 +235,10 @@ nrow(dyadsObsSelect)
 table(dyadsObsSelect$fatherID)
 length(unique(dyadsObsSelect$fatherID))
 
-
+# Colonies of the father
+table(dyadsObsSelect$father)
+# Colonies of the offspring
+table(dyadsObsSelect$offspring)
 
 
 #=============================================================================#

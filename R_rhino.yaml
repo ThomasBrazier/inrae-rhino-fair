@@ -22,3 +22,4 @@ dependencies:
   - r-distr
   - r-rcolorbrewer
   - r-rgdal
+  - r-ggrepel
