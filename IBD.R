@@ -248,14 +248,14 @@ hist(matGen)
 # Distance geographique a recalculer
 # Calcul d'une matrice de distances
 coordCol=read.table("Data/Thu/coordThu.txt",h=T)
-
-plot(coordCol$Long, coordCol$Lat)
-text(coordCol$Long, coordCol$Lat, coordCol$Colony)
+# 
+# plot(coordCol$Long, coordCol$Lat)
+# text(coordCol$Long, coordCol$Lat, coordCol$Colony)
 
 coordCol = coordCol[coordCol$Colony %in% colonies,]
 
-plot(coordCol$Long, coordCol$Lat)
-text(coordCol$Long, coordCol$Lat, coordCol$Colony)
+# plot(coordCol$Long, coordCol$Lat)
+# text(coordCol$Long, coordCol$Lat, coordCol$Colony)
 
 coordCol$Colonie
 
@@ -326,7 +326,7 @@ p2 = ggplot(data=df, aes(x=Distance, y=GeneDistance)) +
   xlab("Geographic distance (km)") + ylab("") +
   scale_x_continuous(breaks=log(c(1, 2,5,10,25)), labels=c(0, 2,5,10,25), limits = log(c(1, 30))) +
   scale_y_continuous(breaks=c(0, 0.02, 0.04, 0.06), labels=c(0, 0.02, 0.04, 0.06), limits = c(0, 0.07)) +
-  # ylim(0, 0.07) +
+  ylim(0, 0.07) +
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -342,6 +342,7 @@ p2 = ggplot(data=df, aes(x=Distance, y=GeneDistance)) +
         legend.text=element_text(size=10),
         legend.title=element_text(size=10, face = "bold"))
 p2
+
 
 #-------------------------------#
 # Mean dispersal distance d'apres IBD pattern

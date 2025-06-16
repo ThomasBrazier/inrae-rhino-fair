@@ -42,6 +42,8 @@ ggplot(colonies, aes(x = Long, y = Lat)) +
   geom_point() +
   geom_text_repel(aes(label = Colonie))
 
+ggsave("Figures/map_Pic.jpeg", width = 12, height = 7, dpi = 300)
+
 # number of genotypes
 nrow(genotypes)
 # Numbers of juveniles and adults
@@ -96,6 +98,7 @@ ggplot(colonies, aes(x = Long, y = Lat)) +
   geom_point() +
   geom_text_repel(aes(label = Colony), max.overlaps = 25)
 
+ggsave("Figures/map_Thu.jpeg", width = 12, height = 7, dpi = 300)
 
 genotypes = genotypes[which(genotypes$idcol %in% col_subset),]
 
