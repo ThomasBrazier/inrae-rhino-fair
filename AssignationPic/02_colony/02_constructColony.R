@@ -26,8 +26,8 @@ file.copy("../01_prepadata/uniqueGenotypesWithInfo.txt", "uniqueGenotypesWithInf
 
 
 # Effacer les anciens fichiers
-cleanup=c("Rhino_OFS.txt","Rhino_CMS.txt","Rhino_CFS.txt","Rhino_ExcludedMothers.txt","Rhino_ExcludedFathers.txt","Rhino_ExcludedMaternalSibs.txt")
-file.remove(cleanup)
+# cleanup=c("Rhino_OFS.txt","Rhino_CMS.txt","Rhino_CFS.txt","Rhino_ExcludedMothers.txt","Rhino_ExcludedFathers.txt","Rhino_ExcludedMaternalSibs.txt")
+# file.remove(cleanup)
 
 prepaColony() # prepare les fichiers OFS, CMS et CFS
 excluded() # prepare fichiers d'exclusion

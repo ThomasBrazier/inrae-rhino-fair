@@ -112,7 +112,7 @@ Data/Thu/uniqueGenotypesWithInfo.txt
 
 I assume that you run these scripts on a Linux system. Before running each script, set your working directory to the script location.
 
-Because some parts of the workflow are interactive, necessitate to copy and paste files manually, or launch commands manually, but also they are computationally intensive, I tag them as *DO NOT RE-RUN UNLESS NECESSARY*.
+Because some parts of the workflow are interactive, necessitate to copy and paste files manually, or launch commands manually, but also they are computationally intensive, I tag them as *DO NOT RE-RUN UNLESS NECESSARY*. Please note that all processed data is present in the repository and it is not necessayr to re-run these computationally intensive softwares to reproduce the analyses and run the code.
 
 In addition, some scripts are experimental, and their outputs are not presented in the final manuscript, hence they are tagged as *EXPERIMENTAL*.
 
@@ -137,7 +137,7 @@ The script `IBD.R` analyses Isolation by Distance and produces `Fig. S2`. The in
 Basic summary statistics of genetic diversity are computed in `GeneticDiversity.R` *EXPERIMENTAL* and not presented in the final manuscript.
 
 
-(2) [0] COLONY *DO NOT RE-RUN UNLESS NECESSARY*
+(2) [x] COLONY
 
 The COLONY analysis is performed in `AssignationPic` and `AssignationThu` for France and Germany, respectively. The workflow is exactly the same between Pic and Thu directories. However, the original comments were in French ands I only translated the French directory (Pic). Please see `AssignationPic` for an english commented pipeline.
 
@@ -145,15 +145,17 @@ The COLONY analysis is performed in `AssignationPic` and `AssignationThu` for Fr
 The complete workflow is divided in these directories for each step:
 
 
-*THIS PART IS COMPUTATIONNALLY INTENSIVE*
+*SOME PARTS OF THIS ANALYSIS ARE COMPUTATIONNALLY INTENSIVE* 
+
+It is fast and possible to re-run all R scripts. They will regenerate input files, process temporary files and pre-process output files. However, to help with reproducibility, all the temporary and final output files are also saved in these directories, so you may not need to re-run all this part.
 
 
-* `AssignationThu/01_prepadata/` prepare the dataset *DO NOT RE-RUN UNLESS NECESSARY*
-* `AssignationThu/01_prepadata/01a_ExtractData.R` Get the data and format the dataset *DO NOT RE-RUN UNLESS NECESSARY*
-* `AssignationThu/02_colony/` where to run COLONY *DO NOT RE-RUN UNLESS NECESSARY*
-* `AssignationThu/02_colony/02_constructColony.R` Make the input files, config files and shell command files to launch COLONY *DO NOT RE-RUN UNLESS NECESSARY*
-* `AssignationThu/03_simulations/` Where to run COLONY on simulations *DO NOT RE-RUN UNLESS NECESSARY*
-* `AssignationThu/03_simulations/03_simulations.R` Prepare input for COLONY simulation module *DO NOT RE-RUN UNLESS NECESSARY*
+* `AssignationThu/01_prepadata/` prepare the dataset
+* `AssignationThu/01_prepadata/01a_ExtractData.R` Get the data and format the dataset
+* `AssignationThu/02_colony/` where to run COLONY. R scripts can be re-run, and COLONY can be launched with auto-generated `02_colony/inputs/qsCol` *DO NOT RE-RUN COLONY UNLESS NECESSARY*
+* `AssignationThu/02_colony/02_constructColony.R` Make the input files, config files and shell command files to launch COLONY
+* `AssignationThu/03_simulations/` Where to run COLONY on simulations. R scripts help to produce input files and bash scripts to launch COLONY *DO NOT RE-RUN COLONY UNLESS NECESSARY*
+* `AssignationThu/03_simulations/03_simulations.R` Prepare input for COLONY simulation module
 * `AssignationThu/04_data/` The final data produced
 
 
@@ -193,7 +195,7 @@ NOTE that `MasterBayes` does not seem to be installable anymore (removed from CR
 
 (4) [x] STRUCTURE
 
-Everything needed to run the STRUCTURE analysis is in `STRUCTURE Dispersal.R`  *DO NOT RE-RUN UNLESS NECESSARY*. Inputs, outputs and the STRUCTURE software and config files are stored in `./STRUCTURE`.
+Everything needed to run the STRUCTURE analysis is in `STRUCTURE Dispersal.R`  *DO NOT RE-RUN STRUCTURE UNLESS NECESSARY*. However, all inputs, outputs and the STRUCTURE software and config files are stored in `./STRUCTURE` and the processing of STRUCTURE's output is easy to re-run.
 
 
 NOTE that STRUCTURE is computationally expensive. Run it on a cluster if necessary, or redo analyses from the outputs already in `./STRUCTURE`.

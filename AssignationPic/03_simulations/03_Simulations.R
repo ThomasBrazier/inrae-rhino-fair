@@ -71,16 +71,16 @@ replicateSim("Simulation",30)
 simShellCmd("Simulation",30)
 
 # Exemple de la Picardie
-CreateScenario(name="simRandomPop",unsampled=c(0.44,0.1,0),propIncomplete=0,probMissingLocus=0)
-CreateScenario(name="simRandomPopIncomplete",unsampled=c(0.44,0.1,0),propIncomplete=0.2,probMissingLocus=2/16)
-CreateScenario(name="simRandomPopFullySampled",unsampled=c(0,0,0),propIncomplete=0,probMissingLocus=0)
-# Replication du jeu de donnees .Dat simule en n exemplaires identiques avec une graine aleatoire differente
-replicateSim("simRandomPop",30)
-simShellCmd("simRandomPop",30)
-replicateSim("simRandomPopIncomplete",30)
-simShellCmd("simRandomPopIncomplete",30)
-replicateSim("simRandomPopFullySampled",30)
-simShellCmd("simRandomPopFullySampled",30)
+# CreateScenario(name="simRandomPop",unsampled=c(0.44,0.1,0),propIncomplete=0,probMissingLocus=0)
+# CreateScenario(name="simRandomPopIncomplete",unsampled=c(0.44,0.1,0),propIncomplete=0.2,probMissingLocus=2/16)
+# CreateScenario(name="simRandomPopFullySampled",unsampled=c(0,0,0),propIncomplete=0,probMissingLocus=0)
+# # Replication du jeu de donnees .Dat simule en n exemplaires identiques avec une graine aleatoire differente
+# replicateSim("simRandomPop",30)
+# simShellCmd("simRandomPop",30)
+# replicateSim("simRandomPopIncomplete",30)
+# simShellCmd("simRandomPopIncomplete",30)
+# replicateSim("simRandomPopFullySampled",30)
+# simShellCmd("simRandomPopFullySampled",30)
 
 
 

@@ -84,7 +84,7 @@ simShellCmd=function(direct="",n=1){
   for (r in 1:n) {
     Commandes=rbind(Commandes,paste("colony2s.gnu.out IFN:COLONY2_",r,".DAT",sep=""))
   }
-  write.table(Commandes,paste(wd,direct,"/qsCol",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(Commandes,paste(direct,"/qsCol",sep=""),quote=F,row.names = F,col.names = F)
 }
 
 
@@ -162,14 +162,14 @@ MatingMatrix=function(n=10,t=4){
 # 3/ pop, taille de la popualtion simulee, qui sera arrondie a l'inferieur pour etre un multiple de la taille de la mating matrix
 ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
   # Directory
-  if (dir.exists(paste(name,"/",sep=""))){
-    cat("Deplacement dans le repertoire.\n")
-    setwd(paste(wd,name,"/",sep=""))
-  }else{
-    cat("Creation du repertoire.\n")
-    dir.create(paste(name,"/",sep=""))
-    setwd(paste(name,"/",sep=""))
-  }
+  # if (dir.exists(paste(name,"/",sep=""))){
+  #   cat("Deplacement dans le repertoire.\n")
+  #   setwd(paste(name,"/",sep=""))
+  # }else{
+  #   cat("Creation du repertoire.\n")
+  #   dir.create(paste(name,"/",sep=""))
+  #   setwd(paste(name,"/",sep=""))
+  # }
 
   
   cat("Chargement d'une matrice d'accouplement.\n")
@@ -254,7 +254,7 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
   # Doivent etre comprises entre 0.001 et 1
   # freq en dessous sont eliminees de la simulation
   options(scipen=50,digits=5)
-  fAllel=read.table("FreqAllelique.txt",fill=TRUE)
+  fAllel=read.table("Simulation/FreqAllelique.txt",fill=TRUE)
   for (i in 1:nrow(fAllel)) {
     input=rbind(input,data.frame(a=paste(fAllel[i,which(!is.na(fAllel[i,]))],collapse=" "),
                                  b=""))
@@ -279,7 +279,7 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
   )
   
   cat("Ecriture du fichier...\n")
-  write.table(input,paste(name,"/input3.Par",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(input, "Simulation/input3.Par",quote=F,row.names = F,col.names = F)
   
   cat("Construction du fichier de projet.\n")
   project=data.frame()
@@ -314,7 +314,7 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
                                    b=""))
   
   cat("Ecriture du fichier...\n")
-  write.table(project,paste(name,"/ProjectInformation.txt",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(project, "Simulation/ProjectInformation.txt",quote=F,row.names = F,col.names = F)
   
   cat("Fin.\n")
 }

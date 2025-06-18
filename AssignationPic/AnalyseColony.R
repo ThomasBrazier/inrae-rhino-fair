@@ -94,7 +94,7 @@ sum(sort(father79)!=sort(father99))
 #           "79" prend le jeu de donnees 7/9 loci complets
 #           "all" prend les deux jeux de donnees
 Paternities=combineParentageMethods("all",sex="M")
-write.table(Paternities,"Paternities.txt",col.name=TRUE,row.names=TRUE)
+# write.table(Paternities,"Paternities.txt",col.name=TRUE,row.names=TRUE)
 
 # MATERNITES
 maternity=constructResultsMums(path="outputs/Colony79lociSansM399/",excl=0.3)
@@ -102,7 +102,7 @@ maternity2=constructResultsMums(path="outputs/Colony99loci/",excl=0.3)
 descResults=describeResults(maternity)
 
 Maternities=combineParentageMethods("all",sex='F')
-write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
+# write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
 
 #-----------------------------#
 # SIM RESULTS WITH INFOS - EXPORT DATA
@@ -122,7 +122,7 @@ empiricalResultsWithInfo()
 #   A PARTIR DE N RUNS DE COLONY
 #-------------------------------#
 descResults=describeResults(Paternities)
-write.table(descResults,paste("resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
+# write.table(descResults,paste("resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
 
 length(unique(descResults$offspring)) # nombre de juveniles
 length(unique(descResults$father)) # nombre de peres
@@ -281,7 +281,7 @@ for (i in 1:nrow(icH0)) {
   icH0[i,4]=quantile(unlist(bootH0[i,]),0.975)
 }
 colnames(icH0)=c("distance","meanFreq","lowerIC","upperIC")
-write.table(icH0,"icH0.txt",col.name=TRUE,row.names=TRUE)
+# write.table(icH0,"icH0.txt",col.name=TRUE,row.names=TRUE)
 
 
 # BOOTSTRAP MEAN DISPERSAL DISTANCE UNDER H0
@@ -344,11 +344,11 @@ for (i in 1:nrow(dyadsObs)) {
 #-------------------------------#
 #   EXPORT DATA TO GRAPH
 #-------------------------------
-write.table(dyadsH0,"dyadsH0.txt",col.names=TRUE,row.names=FALSE)
+# write.table(dyadsH0,"dyadsH0.txt",col.names=TRUE,row.names=FALSE)
 # Run observed distribution with a threshold of 0.3
-write.table(dyadsObs,"dyadsObsSelect.txt",col.names=TRUE,row.names=FALSE)
+# write.table(dyadsObs,"dyadsObsSelect.txt",col.names=TRUE,row.names=FALSE)
 # And then rerun it with a threshold of 0
-write.table(dyadsObs,"dyadsObs.txt",col.names=TRUE,row.names=FALSE)
+# write.table(dyadsObs,"dyadsObs.txt",col.names=TRUE,row.names=FALSE)
 
 
 ##############################################################

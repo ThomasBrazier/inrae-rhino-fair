@@ -35,7 +35,6 @@ source("fonctionsSim.R")
 # 2/ run = number of runs used for estimations
 tabSensitivity=sensitivityResults(path=c("simRandomPop",
                                          "simRandomPopIncomplete"),30)
-View(tabSensitivity)
 
 # tabSensitivity=sensitivityResultsMothers(path=c("simRandomPop",
 #                                          "simRandomPopIncomplete"),30)
@@ -54,13 +53,13 @@ View(tabSensitivity)
 # 2/ number of runs
 # 3/ stats to compute : "mean","median","var"
 distMean=statBestF("simRandomPopIncomplete",run=30,stat="mean")
-write.table(distMean,file="meanBestFather.txt",quote=F,row.names = F,col.names = F)
+# write.table(distMean,file="meanBestFather.txt",quote=F,row.names = F,col.names = F)
 
 distMedian=statBestF("simRandomPopIncomplete",run=30,stat="median")
-write.table(distMedian,file="medianBestFather.txt",quote=F,row.names = F,col.names = F)
+# write.table(distMedian,file="medianBestFather.txt",quote=F,row.names = F,col.names = F)
 
 distVar=statBestF("simRandomPopIncomplete",run=30,stat="var")
-write.table(distVar,file="varBestFather.txt",quote=F,row.names = F,col.names = F)
+# write.table(distVar,file="varBestFather.txt",quote=F,row.names = F,col.names = F)
 
 # To get the number of occurences of the best father
 
@@ -68,9 +67,9 @@ write.table(distVar,file="varBestFather.txt",quote=F,row.names = F,col.names = F
 # 1/ path, the path to the COLONY simulation outputs
 # 2/ number of runs
 distOcc=occurenceBestF("simRandomPop",30)
-write.table(distOcc,file="occurencesBestFather.txt",quote=F,row.names = F,col.names = T)
+# write.table(distOcc,file="occurencesBestFather.txt",quote=F,row.names = F,col.names = T)
 distOcc=occurenceBestF("simRandomPopIncomplete",30)
-write.table(distOcc,file="occurencesBestFatherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
+# write.table(distOcc,file="occurencesBestFatherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
 
 # distOcc=read.table("occurencesBestFather.txt",h=T)
 # OR
@@ -113,9 +112,9 @@ pM
 # 1/ path, the path to the COLONY simulation outputs
 # 2/ number of runs
 distOcc=occurenceBestM("simRandomPop",30)
-write.table(distOcc,file="occurencesBestMother.txt",quote=F,row.names = F,col.names = T)
+# write.table(distOcc,file="occurencesBestMother.txt",quote=F,row.names = F,col.names = T)
 distOcc=occurenceBestM("simRandomPopIncomplete",30)
-write.table(distOcc,file="occurencesBestMotherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
+# write.table(distOcc,file="occurencesBestMotherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
 
 distOcc=read.table("occurencesBestMotherIncompleteGen.txt",h=T)
 
@@ -150,8 +149,8 @@ pF=ggplot(data=dfT, aes(x=runs, y=occurence)) +
 pF
 
 ggarrange(pM,pF,widths=1:1)
-ggsave(paste(graphdir,"/Assignation frequencies of the best father Pic79.tiff",sep=""),
-       device="tiff",dpi=320,units="cm",width=20,height=8)
+# ggsave(paste(graphdir,"/Assignation frequencies of the best father Pic79.tiff",sep=""),
+#        device="tiff",dpi=320,units="cm",width=20,height=8)
 
 
 
