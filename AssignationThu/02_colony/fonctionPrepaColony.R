@@ -6,7 +6,6 @@
 
 # D'apres un script fourni par Eric Petit
 
-unique=read.table("uniqueGenotypesWithInfo.txt",h=T)
 
 prepaColony=function(){
   #######################################################################
@@ -67,7 +66,7 @@ constructColony=function(n=1){
     inputcolony=rbind(inputcolony,data.frame(a=paste("RhinoThomas",r," ! Output file name",sep=""),b=""))
     
     inputcolony=rbind(inputcolony,
-                      data.frame(a=c(paste(nrow(read.table(paste(wd,"Rhino_OFS.txt",sep=""))), "         ! Number of offspring in the sample",sep=""),
+                      data.frame(a=c(paste(nrow(read.table(paste("Rhino_OFS.txt",sep=""))), "         ! Number of offspring in the sample",sep=""),
                                      "8         ! Number of loci",
                                      paste(round(runif(1,1000,9999),0),"      ! Seed for random number generator",sep=""),
                                      "0         ! 0/1=Not updating/updating allele frequency",
@@ -95,7 +94,7 @@ constructColony=function(n=1){
     
     # #Offsprings
     inputcolony=rbind(inputcolony,
-                      data.frame(a=apply(read.table(paste(wd,"Rhino_OFS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Offspring ID and genotypes")
+                      data.frame(a=apply(read.table(paste("Rhino_OFS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Offspring ID and genotypes")
     )
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
     
@@ -104,20 +103,20 @@ constructColony=function(n=1){
                       data.frame(a=c("0.5  1"),b="! Proba de trouver des parents"))
     #   # Nombre de parents
     inputcolony=rbind(inputcolony,
-                      data.frame(a=paste(nrow(read.table(paste(wd,"Rhino_CMS.txt",sep=""))),"  ",
-                                         nrow(read.table(paste(wd,"Rhino_CFS.txt",sep=""))),sep=""),b="!Numbers of candidate males and females" )
+                      data.frame(a=paste(nrow(read.table(paste("Rhino_CMS.txt",sep=""))),"  ",
+                                         nrow(read.table(paste("Rhino_CFS.txt",sep=""))),sep=""),b="!Numbers of candidate males and females" )
     )
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
     
 
     #   candidate males
     inputcolony=rbind(inputcolony,
-                      data.frame(a=apply(read.table(paste(wd,"Rhino_CMS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Candidate males ID and genotypes")
+                      data.frame(a=apply(read.table(paste("Rhino_CMS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Candidate males ID and genotypes")
     )
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
     # Candidate females
     inputcolony=rbind(inputcolony,
-                      data.frame(a=apply(read.table(paste(wd,"Rhino_CFS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Candidate females ID and genotypes")
+                      data.frame(a=apply(read.table(paste("Rhino_CFS.txt",sep="")),1,function (x) paste(x,collapse=" ")),b="!Candidate females ID and genotypes")
     )
     
     
@@ -155,14 +154,14 @@ constructColony=function(n=1){
     # Nombre d'excluded
     
     inputcolony=rbind(inputcolony,
-                      data.frame(a=paste(nrow(read.table(paste(wd,"Rhino_ExcludedFathers.txt",sep=""),h=F,fill=TRUE))),b="!Number of offspring with known excluded paternity")
+                      data.frame(a=paste(nrow(read.table(paste("Rhino_ExcludedFathers.txt",sep=""),h=F,fill=TRUE))),b="!Number of offspring with known excluded paternity")
                       )
     
     #Excludes
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
     
     #Excludes
-    Exclude=apply(read.table(paste(wd,"Rhino_ExcludedFathers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
+    Exclude=apply(read.table(paste("Rhino_ExcludedFathers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
     
     inputcolony=rbind(inputcolony,
                       data.frame(a=Exclude,b="")
@@ -176,14 +175,14 @@ constructColony=function(n=1){
     # Nombre d'excluded
     
     inputcolony=rbind(inputcolony,
-                      data.frame(a=paste(length(apply(read.table(paste(wd,"Rhino_ExcludedMothers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" ")))),b="!Number of offspring with known excluded maternity")
+                      data.frame(a=paste(length(apply(read.table(paste("Rhino_ExcludedMothers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" ")))),b="!Number of offspring with known excluded maternity")
     )
 
     #Excludes
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
 
     #Excludes
-    Exclude=apply(read.table(paste(wd,"Rhino_ExcludedMothers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
+    Exclude=apply(read.table(paste("Rhino_ExcludedMothers.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
 
     inputcolony=rbind(inputcolony,
                       data.frame(a=Exclude,b="")
@@ -200,13 +199,13 @@ constructColony=function(n=1){
     
     # Nombre d'excluded
     inputcolony=rbind(inputcolony,
-                      data.frame(a=paste(length(apply(read.table(paste(wd,"Rhino_ExcludedMaternalSibs.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" ")))),b="!Number of offspring with known excluded maternal sibships"))
+                      data.frame(a=paste(length(apply(read.table(paste("Rhino_ExcludedMaternalSibs.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" ")))),b="!Number of offspring with known excluded maternal sibships"))
 
     #Excludes
     inputcolony=rbind(inputcolony,data.frame(a="",b=""))
 
    #Excludes
-    Exclude=apply(read.table(paste(wd,"Rhino_ExcludedMaternalSibs.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
+    Exclude=apply(read.table(paste("Rhino_ExcludedMaternalSibs.txt",sep=""),sep="\n"),1,function (x) paste(x,collapse=" "))
 
     inputcolony=rbind(inputcolony,
                       data.frame(a=Exclude,b="")
@@ -220,7 +219,7 @@ constructColony=function(n=1){
     #                                  "itself generated by Pierre-Loup JAN",
     #                                  "and modified by Thomas BRAZIER"),b=""))
     # 
-    write.table(inputcolony,paste(wd,"inputs/Colony",r,".Dat",sep=""),quote=F,row.names = F,col.names = F)
+    write.table(inputcolony,paste("inputs/Colony",r,".Dat",sep=""),quote=F,row.names = F,col.names = F)
     
   }
   

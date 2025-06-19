@@ -3,22 +3,18 @@
 #         Simulations
 #===============================#
 
-# DIRECTORIES
-if (Sys.info()["sysname"]=="Darwin") {
-  setwd("/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/03_simulations/")
-  wd="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/03_simulations/"
-  graphdir="/Volumes/Samsung_T5/INRA RHINO/R/Graph/"
-  Rdir="/Volumes/Samsung_T5/INRA RHINO/R/"
-  source("fonctionsPrepaSim.R")
-}else {
-  if (Sys.info()["sysname"]=="Windows"){
-    setwd("E:/INRA RHINO/R/AssignationThu/03_simulations/")
-    wd="E:/INRA RHINO/R/AssignationThu/03_simulations/"
-    graphdir="E:/INRA RHINO/R/Graph/"
-    Rdir="E:/INRA RHINO/R/"
-    source("fonctionsPrepaSim.R")
-  }
-}
+# clear global environment: remove all variables
+rm(list=ls(all=TRUE))
+# library(rstudioapi)
+# Get the directory of the file & set working directory
+# filedir=dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(filedir)
+
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("../../Sources/packages.R")
+source("fonctionsPrepaSim.R")
 
 
 #-------------------------------#
@@ -28,22 +24,22 @@ if (Sys.info()["sysname"]=="Darwin") {
 # Chaque simulation doit etre lancee dans COLONY Windows Only
 
 # Replication du jeu de donnees .Dat simule en n exemplaires identiques avec une graine aleatoire differente
-replicateSim("Pop2400rep3",30)
-simShellCmd("Pop2400rep3",30)
+# replicateSim("Pop2400rep3",30)
+# simShellCmd("Pop2400rep3",30)
 
 
 #----------------------------------#
 # FREQUENCES ALLELIQUES ALLEMANDES
 #----------------------------------
-library(related)
-info=read.table("uniqueGenotypesWithInfo.txt",h=T)
-write.table(info[,1:17],"genotypeData.txt",sep=" ",col.names = FALSE,row.names = FALSE)
-allelFreq=readgenotypedata("genotypeData.txt")$freqs
-f=c()
-for (i in 1:8) {
-  f=c(f,paste(unlist(t(round(allelFreq[[i]],digits=4))[2,]),collapse=" "))
-}
-write.table(f,"FreqAllelique.txt",col.names=F,row.names=F)
+# library(related)
+# info=read.table("uniqueGenotypesWithInfo.txt",h=T)
+# write.table(info[,1:17],"genotypeData.txt",sep=" ",col.names = FALSE,row.names = FALSE)
+# allelFreq=readgenotypedata("genotypeData.txt")$freqs
+# f=c()
+# for (i in 1:8) {
+#   f=c(f,paste(unlist(t(round(allelFreq[[i]],digits=4))[2,]),collapse=" "))
+# }
+# write.table(f,"FreqAllelique.txt",col.names=F,row.names=F)
 
 #-------------------------------#
 # CREATION D'UNE POP THEORIQUE ALEATOIRE

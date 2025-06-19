@@ -1002,7 +1002,7 @@ occurenceBestF=function(path="",run=50){
   timeIn=Sys.time()
   library(data.table)
   cat("Assemblage des donnees.\n")
-  offsprings=read.table(paste(path,"/offsprings.txt",sep=""),sep=" ",h=F)
+  offsprings=read.table(paste("outputs/", path,"/offsprings.txt",sep=""),sep=" ",h=F)
   # ProbDad : liste des probability de Colony a chaque run 1-50
   probDad=as.data.frame(offsprings[,1])
   colnames(probDad)="OffspringID"
@@ -1014,10 +1014,10 @@ occurenceBestF=function(path="",run=50){
   }
   for (i in 1:run) {
     # proportions d'assignations pour paternite
-    if (max(count.fields(paste(path,"/",path,"_",i,".Paternity",sep="")))==3) {
-      pat=read.table(paste(path,"/",path,"_",i,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+    if (max(count.fields(paste("outputs/", path,"/",path,"_",i,".Paternity",sep="")))==3) {
+      pat=read.table(paste("outputs/", path,"/",path,"_",i,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
     } else {
-      pat=fread(paste(path,"/",path,"_",i,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+      pat=fread(paste("outputs/", path,"/",path,"_",i,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
       pat=pat[,1:3]
     }
     
@@ -1206,7 +1206,7 @@ occurenceBestM=function(path="",run=50){
   timeIn=Sys.time()
   library(data.table)
   cat("Assemblage des donnees.\n")
-  offsprings=read.table(paste(path,"/offsprings.txt",sep=""),sep=" ",h=F)
+  offsprings=read.table(paste("outputs/", path,"/offsprings.txt",sep=""),sep=" ",h=F)
   # ProbDad : liste des probability de Colony a chaque run 1-50
   probDad=as.data.frame(offsprings[,1])
   colnames(probDad)="OffspringID"
@@ -1218,10 +1218,10 @@ occurenceBestM=function(path="",run=50){
   }
   for (i in 1:run) {
     # proportions d'assignations pour paternite
-    if (max(count.fields(paste(path,"/",path,"_",i,".Maternity",sep="")))==3) {
-      pat=read.table(paste(path,"/",path,"_",i,".Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+    if (max(count.fields(paste("outputs/", path,"/",path,"_",i,".Maternity",sep="")))==3) {
+      pat=read.table(paste("outputs/", path,"/",path,"_",i,".Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
     } else {
-      pat=fread(paste(path,"/",path,"_",i,".Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+      pat=fread(paste("outputs/", path,"/",path,"_",i,".Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
       pat=pat[,1:3]
     }
     
@@ -1410,7 +1410,7 @@ statBestF=function(path="",run=50,stat="mean"){
   timeIn=Sys.time()
   library(data.table)
   cat("Assemblage des donnees.\n")
-  offsprings=read.table(paste(path,"/offsprings.txt",sep=""),sep=" ",h=F)
+  offsprings=read.table(paste("outputs/", path,"/offsprings.txt",sep=""),sep=" ",h=F)
   # ProbDad : liste des probability de Colony a chaque run 1-50
   probDad=as.data.frame(offsprings[,1])
   colnames(probDad)="OffspringID"
@@ -1422,10 +1422,10 @@ statBestF=function(path="",run=50,stat="mean"){
   }
   for (i in 1:run) {
     # proportions d'assignations pour paternite
-    if (max(count.fields(paste(path,"/",path,"_",i,".Paternity",sep="")))==3) {
-      pat=read.table(paste(path,"/",path,"_",i,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+    if (max(count.fields(paste("outputs/", path,"/",path,"_",i,".Paternity",sep="")))==3) {
+      pat=read.table(paste("outputs/", path,"/",path,"_",i,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
     } else {
-      pat=fread(paste(path,"/",path,"_",i,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+      pat=fread(paste("outputs/", path,"/",path,"_",i,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
       pat=pat[,1:3]
     }
     
@@ -1646,12 +1646,12 @@ sensitivityResults=function(path=c(""),run=50){
     # Recuperation de la liste des offsprings
     # generer independamment un fichier texte avec les offsprings
     # d'apres .DAT
-    offsprings=read.table(paste(path[p],"/offsprings.txt",sep=""),sep=" ",h=F)
+    offsprings=read.table(paste("outputs/", path[p],"/offsprings.txt",sep=""),sep=" ",h=F)
     dyads=as.data.frame(offsprings[,1])
     colnames(dyads)="offspring"
     # generer un fichier txt avec la liste des peres echantillonnes
     # d'apres .DAT
-    fathers=read.table(paste(path[p],"/fathers.txt",sep=""),sep=" ",h=F)
+    fathers=read.table(paste("outputs/", path[p],"/fathers.txt",sep=""),sep=" ",h=F)
     fathers=as.data.frame(fathers[,1])
     
     # tableaux vides
@@ -1660,10 +1660,10 @@ sensitivityResults=function(path=c(""),run=50){
     
     for (r in 1:run) {
       # Recuperation de la liste des paternites
-      if (max(count.fields(paste(path[p],"/",path[p],"_",r,".Paternity",sep="")))==3) {
-        paternity=read.table(paste(path[p],"/",path[p],"_",r,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+      if (max(count.fields(paste("outputs/", path[p],"/",path[p],"_",r,".Paternity",sep="")))==3) {
+        paternity=read.table(paste("outputs/", path[p],"/",path[p],"_",r,".Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
       } else {
-        paternity=fread(paste(path[p],"/",path[p],"_",r,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+        paternity=fread(paste("outputs/", path[p],"/",path[p],"_",r,".Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
         paternity=paternity[,1:3]
       }
       
@@ -1744,12 +1744,12 @@ sensitivityResultsMothers=function(path=c(""),run=50){
     # Recuperation de la liste des offsprings
     # generer independamment un fichier texte avec les offsprings
     # d'apres .DAT
-    offsprings=read.table(paste(path[p],"/offsprings.txt",sep=""),sep=" ",h=F)
+    offsprings=read.table(paste("outputs/", path[p],"/offsprings.txt",sep=""),sep=" ",h=F)
     dyads=as.data.frame(offsprings[,1])
     colnames(dyads)="offspring"
     # generer un fichier txt avec la liste des peres echantillonnes
     # d'apres .DAT
-    fathers=read.table(paste(path[p],"/mothers.txt",sep=""),sep=" ",h=F)
+    fathers=read.table(paste("outputs/", path[p],"/mothers.txt",sep=""),sep=" ",h=F)
     fathers=as.data.frame(fathers[,1])
     
     # tableaux vides
@@ -1758,10 +1758,10 @@ sensitivityResultsMothers=function(path=c(""),run=50){
     
     for (r in 1:run) {
       # Recuperation de la liste des paternites
-      if (max(count.fields(paste(path[p],"/",path[p],"_",r,".Maternity",sep="")))==3) {
-        paternity=read.table(paste(path[p],"/",path[p],"_",r,".Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+      if (max(count.fields(paste("outputs/", path[p],"/",path[p],"_",r,".Maternity",sep="")))==3) {
+        paternity=read.table(paste("outputs/", path[p],"/",path[p],"_",r,".Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
       } else {
-        paternity=fread(paste(path[p],"/",path[p],"_",r,".Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+        paternity=fread(paste("outputs/", path[p],"/",path[p],"_",r,".Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
         paternity=paternity[,1:3]
       }
       
@@ -1826,21 +1826,21 @@ simResultsWithInfo=function(path=""){
   require(data.table)
   # Recuperation de la liste des offsprings
   # generer un fichier texte avec les offsprings
-  offsprings=read.table(paste(path,"/offsprings.txt",sep=""),sep=" ",h=F)
+  offsprings=read.table(paste("outputs/", path,"/offsprings.txt",sep=""),sep=" ",h=F)
   dyads=as.data.frame(offsprings[,1])
   colnames(dyads)="offspring"
   # Recuperation de la liste des paternites
-  if (max(count.fields(paste(path,"/",path,"_1.Paternity",sep="")))==3) {
-    paternity=read.table(paste(path,"/",path,"_1.Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+  if (max(count.fields(paste("outputs/", path,"/",path,"_1.Paternity",sep="")))==3) {
+    paternity=read.table(paste("outputs/", path,"/",path,"_1.Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
   } else {
-    paternity=fread(paste(path,"/",path,"_1.Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+    paternity=fread(paste("outputs/", path,"/",path,"_1.Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
     paternity=paternity[,1:3]
   }
   # Recuperation de la liste des maternites
-  if (max(count.fields(paste(path,"/",path,"_1.Maternity",sep="")))==3) {
-    maternity=read.table(paste(path,"/",path,"_1.Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+  if (max(count.fields("outputs/", paste(path,"/",path,"_1.Maternity",sep="")))==3) {
+    maternity=read.table(paste("outputs/", path,"/",path,"_1.Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
   } else {
-    maternity=fread(paste(path,"/",path,"_1.Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+    maternity=fread(paste("outputs/", path,"/",path,"_1.Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
     maternity=maternity[,1:3]
   }
   # For each offspring, mother and father are searched and true/false assignment is checked at the same time
@@ -1887,8 +1887,8 @@ simResultsWithInfo=function(path=""){
   }
   
   # Add the genotype of the father
-  genoFather=read.table(paste(datadir,path,"/fathers.txt",sep=""),header=FALSE,sep=" ")
-  genoMother=read.table(paste(datadir,path,"/mothers.txt",sep=""),header=FALSE,sep=" ")
+  genoFather=read.table(paste("outputs/", path,"/fathers.txt",sep=""),header=FALSE,sep=" ")
+  genoMother=read.table(paste("outputs/", path,"/mothers.txt",sep=""),header=FALSE,sep=" ")
   # columns 6 to 21  are for father genotype
   # columns 22 to 37 are for mother genotype
   dyads[,6:37]=rep(NA,nrow(dyads))
@@ -1904,6 +1904,6 @@ simResultsWithInfo=function(path=""){
   # Export
   cat(length(which(dyads$assignmentFather==1)),"over",length(which(dyads$assignmentFather==0 | dyads$assignmentFather==1)),"fathers assigned :",length(which(dyads$assignmentFather==1))/length(which(dyads$assignmentFather==0 | dyads$assignmentFather==1))*100,"%\n")
   cat(length(which(dyads$assignmentMother==1)),"over",length(which(dyads$assignmentMother==0 | dyads$assignmentMother==1)),"mothers assigned :",length(which(dyads$assignmentMother==1))/length(which(dyads$assignmentMother==0 | dyads$assignmentMother==1))*100,"%\n")
-  write.table(dyads,paste(wd,path,"_resultsWithInfo.txt",sep=""),col.names=TRUE,row.names=FALSE)
+  write.table(dyads,paste("outputs/", path,"_resultsWithInfo.txt",sep=""),col.names=TRUE,row.names=FALSE)
   return(dyads)
 }

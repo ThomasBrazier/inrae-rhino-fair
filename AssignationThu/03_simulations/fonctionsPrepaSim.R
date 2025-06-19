@@ -25,18 +25,18 @@ replicateSim=function(path="",r=2) {
     pb=txtProgressBar(min = 2, max = r, style = 3)
     for (i in 2:r) {
       # supprime version precedente
-      if (file.exists(paste(wd,path,"/COLONY2_",(i),".DAT",sep=""))){
-        file.remove(paste(wd,path,"/COLONY2_",(i),".DAT",sep=""))
+      if (file.exists(paste(path,"/COLONY2_",(i),".DAT",sep=""))){
+        file.remove(paste(path,"/COLONY2_",(i),".DAT",sep=""))
       }
       # lit le fichier
-      dat=readLines(paste(wd,path,"/COLONY2_",(i-1),".DAT",sep=""))
+      dat=readLines(paste(path,"/COLONY2_",(i-1),".DAT",sep=""))
       # modifie dataset name et output file name
       dat[1]=paste(path,"_",i,"       ! Dataset name, Length<51",sep="")
       dat[2]=paste(path,"_",i,"       ! Main output file name, Length<21",sep="")
       # modifie la graine (ligne 5)
       dat[5]=paste(round(runif(1,1000,9999),0),"      ! Seed for random number generator",sep="")
       # ecrit le nouveau fichier
-      writeLines(dat,paste(wd,path,"/COLONY2_",(i),".DAT",sep=""))
+      writeLines(dat,paste(path,"/COLONY2_",(i),".DAT",sep=""))
       Sys.sleep(0.01)
       # update progress bar
       setTxtProgressBar(pb,i)
@@ -70,7 +70,7 @@ simShellCmd=function(direct="",n=1){
   for (r in 1:n) {
     Commandes=rbind(Commandes,paste("colony2s.gnu.out IFN:COLONY2_",r,".DAT",sep=""))
   }
-  write.table(Commandes,paste(wd,direct,"/qsColThomas",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(Commandes,paste(direct,"/qsColThomas",sep=""),quote=F,row.names = F,col.names = F)
 }
 
 
@@ -84,7 +84,7 @@ simShellCmd=function(direct="",n=1){
 # n = nombre de sous-structure independantes dans la matrice
 # dont depend le nombre d'individus adultes = n*24 parents
 # t = nombre de generations
-MatingMatrix=function(n=10,t=4){
+MatingMatrix=function(n=10,t=4, name=""){
   timeIn=Sys.time()
   
   # Creation de la matrice totale
@@ -128,12 +128,12 @@ MatingMatrix=function(n=10,t=4){
       }
       c=c+1
     }
-    write.table(x=M,file=paste("Matrice",sub,".txt",sep=""),row.names = FALSE,col.names = FALSE)
+    write.table(x=M,file=paste(name, "/Matrice",sub,".txt",sep=""),row.names = FALSE,col.names = FALSE)
     
     # Ajout de la sous matrice dans la matrice totale
     Mat[sub:(sub+11),sub:(sub+11)]=M
   }
-  write.table(x=Mat,file=paste("MatriceAccouplement.txt",sep=""),row.names = FALSE,col.names = FALSE)
+  write.table(x=Mat,file=paste(name, "/MatriceAccouplement.txt",sep=""),row.names = FALSE,col.names = FALSE)
   
   return(Mat)
   timeOut=Sys.time()
@@ -148,13 +148,13 @@ MatingMatrix=function(n=10,t=4){
 # 3/ pop, taille de la popualtion simulee, qui sera arrondie a l'inferieur pour etre un multiple de la taille de la mating matrix
 ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
   # Directory
-  cat("Deplacement dans le repertoire.\n")
-  setwd(paste(wd,name,"/",sep=""))
+  # cat("Deplacement dans le repertoire.\n")
+  # setwd(paste(name,"/",sep=""))
   
   cat("Chargement d'une matrice d'accouplement.\n")
   if (is.na(mating)){
     # Construit d'abord la matrice d'accouplement
-    M=MatingMatrix(n,t)
+    M=MatingMatrix(n,t, name)
   }else{
     M=mating
   }
@@ -259,7 +259,7 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
   )
   
   cat("Ecriture du fichier...\n")
-  write.table(input,paste(wd,name,"/input3.Par",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(input,paste(name,"/input3.Par",sep=""),quote=F,row.names = F,col.names = F)
   
   cat("Construction du fichier de projet.\n")
   project=data.frame()
@@ -294,10 +294,9 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
                                    b=""))
   
   cat("Ecriture du fichier...\n")
-  write.table(project,paste(wd,name,"/ProjectInformation.txt",sep=""),quote=F,row.names = F,col.names = F)
+  write.table(project,paste(name,"/ProjectInformation.txt",sep=""),quote=F,row.names = F,col.names = F)
   
   cat("Fin.\n")
-  setwd(wd)
 }
 
 
@@ -324,11 +323,11 @@ ConstructSimInput=function(n=10,t=4,pop=4000,name="",mating=NA){
 # - probMissingLocus
 CreateScenario=function(name="",unsampled=c(0,0,0),propIncomplete=0,probMissingLocus=0) {
   # Directory
-  cat("Deplacement dans le repertoire.\n")
-  setwd(paste(wd,name,"/",sep=""))
+  # cat("Deplacement dans le repertoire.\n")
+  # setwd(paste(name,"/",sep=""))
   
   cat("Ouverture du fichier.\n")
-  f=file("COLONY2.DAT")
+  f=file(paste(name,"/COLONY2.DAT",sep=""))
   colony=readLines(f)
   close(f)
   # Parcourt une fois toutes les lignes pour identifier les lignes d'interet, stockees dans trois vecteurs
@@ -436,10 +435,9 @@ CreateScenario=function(name="",unsampled=c(0,0,0),propIncomplete=0,probMissingL
   
   # Fin du programme et retour du dataset
   cat("Ecriture du fichier...")
-  write.table(colony,"COLONY2_1.DAT",quote=F,row.names = F,col.names = F)
+  write.table(colony,paste(name,"/COLONY2_1.DAT", sep=""),quote=F,row.names = F,col.names = F)
   
   #return(colony)
   
   cat("Fin.\n")
-  setwd(wd)
 }

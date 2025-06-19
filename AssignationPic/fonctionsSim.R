@@ -1826,21 +1826,21 @@ simResultsWithInfo=function(path=""){
   require(data.table)
   # Recuperation de la liste des offsprings
   # generer un fichier texte avec les offsprings
-  offsprings=read.table(paste(path,"/offsprings.txt",sep=""),sep=" ",h=F)
+  offsprings=read.table(paste("outputs/", path,"/offsprings.txt",sep=""),sep=" ",h=F)
   dyads=as.data.frame(offsprings[,1])
   colnames(dyads)="offspring"
   # Recuperation de la liste des paternites
-  if (max(count.fields(paste(path,"/",path,"_1.Paternity",sep="")))==3) {
-    paternity=read.table(paste(path,"/",path,"_1.Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+  if (max(count.fields(paste("outputs/", path,"/",path,"_1.Paternity",sep="")))==3) {
+    paternity=read.table(paste("outputs/", path,"/",path,"_1.Paternity",sep=""),h=T,colClasses = c("character","character","numeric"))
   } else {
-    paternity=fread(paste(path,"/",path,"_1.Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+    paternity=fread(paste("outputs/", path,"/",path,"_1.Paternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
     paternity=paternity[,1:3]
   }
   # Recuperation de la liste des maternites
-  if (max(count.fields(paste(path,"/",path,"_1.Maternity",sep="")))==3) {
-    maternity=read.table(paste(path,"/",path,"_1.Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
+  if (max(count.fields(paste("outputs/", path,"/",path,"_1.Maternity",sep="")))==3) {
+    maternity=read.table(paste("outputs/", path,"/",path,"_1.Maternity",sep=""),h=T,colClasses = c("character","character","numeric"))
   } else {
-    maternity=fread(paste(path,"/",path,"_1.Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
+    maternity=fread(paste("outputs/", path,"/",path,"_1.Maternity",sep=""),h=T,select=c(1:5),fill=TRUE,colClasses = c("character","character","numeric","character","numeric"))
     maternity=maternity[,1:3]
   }
   # For each offspring, mother and father are searched and true/false assignment is checked at the same time
@@ -1887,8 +1887,8 @@ simResultsWithInfo=function(path=""){
   }
   
   # Add the genotype of the father
-  genoFather=read.table(paste(datadir,path,"/fathers.txt",sep=""),header=FALSE,sep=" ")
-  genoMother=read.table(paste(datadir,path,"/mothers.txt",sep=""),header=FALSE,sep=" ")
+  genoFather=read.table(paste("outputs/", path,"/fathers.txt",sep=""),header=FALSE,sep=" ")
+  genoMother=read.table(paste("outputs/", path,"/mothers.txt",sep=""),header=FALSE,sep=" ")
   # columns 6 to 21  are for father genotype
   # columns 22 to 37 are for mother genotype
   dyads[,6:37]=rep(NA,nrow(dyads))

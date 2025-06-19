@@ -1,5 +1,5 @@
 excluded=function(){
-  unique=read.table("uniqueGenotypesWithInfo.txt",h=T)
+  unique=read.table("../uniqueGenotypesWithInfo.txt",h=T)
   
   # i. Excluded Maternities
   # I write lists of individuals that cannot be the mother of the focal offspring

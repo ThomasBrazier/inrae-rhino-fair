@@ -112,7 +112,7 @@ Data/Thu/uniqueGenotypesWithInfo.txt
 
 I assume that you run these scripts on a Linux system. Before running each script, set your working directory to the script location.
 
-Because some parts of the workflow are interactive, necessitate to copy and paste files manually, or launch commands manually, but also they are computationally intensive, I tag them as *DO NOT RE-RUN UNLESS NECESSARY*. Please note that all processed data is present in the repository and it is not necessayr to re-run these computationally intensive softwares to reproduce the analyses and run the code.
+Because some parts of the workflow are interactive, necessitate to copy and paste files manually, or launch commands manually, but also they are computationally intensive, I tag them as *DO NOT RE-RUN UNLESS NECESSARY*. Please note that all processed data is present in the repository and it is not necessary to re-run these computationally intensive softwares to reproduce the analyses and run the code.
 
 In addition, some scripts are experimental, and their outputs are not presented in the final manuscript, hence they are tagged as *EXPERIMENTAL*.
 
@@ -162,8 +162,6 @@ It is fast and possible to re-run all R scripts. They will regenerate input file
 
 *THIS PART TO PRODUCE OUTPUT FILES FOR DOWNSTREAM ANALYSES*
 
-
-Note that output files are too large to be stored in a github repository. This part will raise an error because they are missing if you try to run it without running the entire pipeline.
 
 
 * `AssignationThu/AnalyseSimulations.R` to produce the COLONY empirical output dataset for downstream analyses

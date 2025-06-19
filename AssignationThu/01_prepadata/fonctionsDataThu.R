@@ -143,7 +143,7 @@ convertToUnique=function(falseloci=1,sexmark=FALSE,withcolony=TRUE){
   #-------------------------------#
   # Ecriture du fichier
   #-------------------------------
-  write.table(uniqueGenotypesWithInfo,paste(wd,"uniqueGenotypesWithInfo.txt",sep=""),row.names=F,col.names=T,quote=F,sep="\t")
+  write.table(uniqueGenotypesWithInfo,"uniqueGenotypesWithInfo.txt",row.names=F,col.names=T,quote=F,sep="\t")
   
   timeOut=Sys.time()
   cat("Fichier des genotypes uniques construit en",difftime(timeOut,timeIn),"secondes.")

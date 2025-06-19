@@ -3,26 +3,18 @@
 #   Extraction des donnees de la BDD
 #===============================#
 
-# DIRECTORIES
-# Working directories
-# New users need to configure correct pathways
-if (Sys.info()["sysname"]=="Darwin") {
-  wd="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/01_prepadata/"
-  graphdir="/Volumes/Samsung_T5/INRA RHINO/R/Graph/"
-  Rdir="/Volumes/Samsung_T5/INRA RHINO/R/"
-  setwd(wd)
-  source(paste(wd,"fonctionsPrepaData.R",sep=""))
-  source(paste(wd,"fonctionsDataThu.R",sep=""))
-}else {
-  if (Sys.info()["sysname"]=="Windows"){
-    wd="E:/INRA RHINO/R/AssignationThu/01_prepadata/"
-    graphdir="E:/INRA RHINO/R/Graph/"
-    Rdir="E:/INRA RHINO/R/"
-    setwd(wd)
-    source(paste(wd,"fonctionsPrepaData.R",sep=""))
-    source(paste(wd,"fonctionsDataThu.R",sep=""))
-  }
-}
+# clear global environment: remove all variables
+rm(list=ls(all=TRUE))
+# library(rstudioapi)
+# Get the directory of the file & set working directory
+# filedir=dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(filedir)
+
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("../../Sources/packages.R")
+source("fonctionsDataThu.R")
 
 
 #-------------------------------#
@@ -34,8 +26,8 @@ unique=convertToUnique(falseloci=2,sexmark=FALSE)
 #-------------------------------#
 # Construction du tableau des effectifs
 #-------------------------------#
-effectifs=effectifsTable(unique)
-View(effectifs)
+# effectifs=effectifsTable(unique)
+# View(effectifs)
 
 #-------------------------------#
 # Analyse du jeu de donnees uniqueGenotypesWithInfo
@@ -59,7 +51,7 @@ totalM/(totalF+totalM)*100
 #-------------------------------
 #source(paste(wd,"01fonction_tests.R",sep=""))
 # Renseigner l'objet "unique", le nombre de tirages et si vous voulez un rapport plus detaille
-tests(unique,10,verbose=F)
+# tests(unique,10,verbose=F)
 
 
 

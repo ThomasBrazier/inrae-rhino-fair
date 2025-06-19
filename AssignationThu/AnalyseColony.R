@@ -3,36 +3,15 @@
 #         Colony on Data
 #     Analyse des resultats
 #===============================#
+# clear global environment: remove all variables
+rm(list=ls(all=TRUE))
 
-# DIRECTORIES
-# Working directories
-# New users need to configure correct pathways
-if (Sys.info()["sysname"]=="Darwin") {
-  dir="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/"
-  setwd("/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/")
-  source("fonctionsColony.R")
-  wd="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/04_data/outputs/"
-  datadir="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/04_data/outputs/"
-  graphdir="/Volumes/Samsung_T5/INRA RHINO/R/Graph"
-  Rdir="/Volumes/Samsung_T5/INRA RHINO/R/"
-  setwd(wd)
-  info = read.table("uniqueGenotypesWithInfo.txt", h = T)
-  require(ggplot2)
-}else {
-  if (Sys.info()["sysname"]=="Windows"){
-    dir="E:/INRA RHINO/R/AssignationThu/"
-    setwd("E:/INRA RHINO/R/AssignationThu/")
-    source("fonctionsColony.R")
-    wd="E:/INRA RHINO/R/AssignationThu/04_data/outputs/"
-    datadir="E:/INRA RHINO/R/AssignationThu/04_data/outputs/"
-    graphdir="E:/INRA RHINO/R/Graph"
-    Rdir="E:/INRA RHINO/R/"
-    setwd(wd)
-    info = read.table("uniqueGenotypesWithInfo.txt", h = T)
-    require(ggplot2)
-  }
-}
-
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("../Sources/packages.R")
+info = read.table("uniqueGenotypesWithInfo.txt", h = T)
+source("fonctionsColony.R")
 
 #-------------------------------#
 #   CLEAN DIRECTORIES & REMOVE USELESS FILES
@@ -40,10 +19,11 @@ if (Sys.info()["sysname"]=="Darwin") {
 # remove results files from COLONY which are useless for us
 # e.g. output files of  .GtypeData, .MidResults...
 # in a specified directory (path = ...)
-cleanUp("Thuringia79/")
-cleanUp("Thuringia99/")
-cleanUp("simRandomPopThu/")
-cleanUp("simRandomPopThuIncomplete/")
+# cleanUp("Thuringia79/")
+# cleanUp("Thuringia99/")
+# cleanUp("simRandomPopThu/")
+# cleanUp("simRandomPopThuIncomplete/")
+
 #-------------------------------#
 #   CONSTRUCTION DU DATASET
 #   A PARTIR DE N RUNS DE COLONY
@@ -54,11 +34,11 @@ cleanUp("simRandomPopThuIncomplete/")
 # Recuperation des paternites
 # Construction du fichier des paternites
 # Exclusion des fausses assignations
-paternity=constructResults(path="Thuringia79/",excl=0.3)
-paternity2=constructResults(path="Thuringia99/",excl=0.3)
+paternity=constructResults(path="outputs/Thuringia79/",excl=0.3)
+paternity2=constructResults(path="outputs/Thuringia99/",excl=0.3)
 # OR
-paternity=constructResults(path="Thuringia79/",excl=0.003)
-paternity2=constructResults(path="Thuringia99/",excl=0.003)
+paternity=constructResults(path="outputs/Thuringia79/",excl=0.003)
+paternity2=constructResults(path="outputs/Thuringia99/",excl=0.003)
 
 ###### SELECTION de PATERNITY
 ###### RASSEMBLER LES DEUX JEUX DE DONNEES paternity ET paternity2
@@ -89,15 +69,15 @@ sum(sort(father79)!=sort(father99))
 #           "79" prend le jeu de donnees 7/9 loci complets
 #           "all" prend les deux jeux de donnees
 Paternities=combineParentageMethods("all",sex="M")
-write.table(Paternities,"Paternities.txt",col.name=TRUE,row.names=TRUE)
+# write.table(Paternities,"Paternities.txt",col.name=TRUE,row.names=TRUE)
 
 # MATERNITES
-maternity=constructResultsMums(path="Thuringia79/",excl=0.3)
-maternity2=constructResultsMums(path="Thuringia99/",excl=0.3)
+maternity=constructResultsMums(path="outputs/Thuringia79/",excl=0.3)
+maternity2=constructResultsMums(path="outputs/Thuringia99/",excl=0.3)
 descResults=describeResults(maternity)
 
 Maternities=combineParentageMethods("all",sex='F')
-write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
+# write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
 
 #-----------------------------#
 # SIM RESULTS WITH INFOS - EXPORT DATA
@@ -109,66 +89,66 @@ write.table(Maternities,"Maternities.txt",col.name=TRUE,row.names=TRUE)
 # - correct/incorrect assignation
 # - genotype
 
-empiricalResultsWithInfo()
+# empiricalResultsWithInfo()
 
-#-------------------------------#
-#   DESCRIPTION DES RESULTATS
-#   A PARTIR DE N RUNS DE COLONY
-#-------------------------------
-descResults=describeResults(Paternities)
-write.table(descResults,paste(Rdir,"AssignationThu/resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
-
-length(unique(descResults$offspring)) # nombre de juveniles
-length(unique(descResults$father)) # nombre de peres
-
-# Distribution du nombre d'occurence de chaque couple offsprings-fathers
-distBestF=distBestFather(path="Colony79lociSansM399/")
-# OR
-distBestF=distBestFather(path="Colony99loci/")
-
-# PLOT : Distribution du nombre d'occurence de chaque couple offsprings-fathers
-# en fonction de la distribution attendue d'apres les simulations
-distSim=read.table(paste(Rdir,"Assignation/04_data/outputs/occurencesBestFather.txt",sep=""),header=TRUE)
-# OR
-distSim=read.table(paste(Rdir,"Assignation/04_data/outputs/occurencesBestFatherIncompleteGen.txt",sep=""),header=TRUE)
-
-
-# PLOT
-df=data.frame(occurence=distBestF$occurences/nrun)
-dfSim=data.frame(occurence=distSim$occurence[which(distSim$runs==29)])
-
-hist(df$occurence,freq=FALSE,ylim=c(0,8))
-lines(density(as.numeric(unlist(df)),na.rm=TRUE))
-lines(density(as.numeric(unlist(dfSim))))
-
-nrun=30
-
-ggplot(data=df, aes(x=occurence)) +
-  geom_histogram(aes(y=..density..),binwidth=0.1,fill="grey",color="black") +
-  geom_line(aes(y=..density..),fill="grey",color="black",stat="density",size=1.3) +
-  geom_line(data=dfSim,aes(x=occurence,y=..density..),fill="grey",color="black",stat="density",size=2) +
-  
-  # geom_bar(aes(y=..count../457),fill="grey",color="black") +
-  # geom_line(data=dfSim,aes(x=occurence,y=..density../200),size=1.3,stat='density') +
-  xlim(0,1) +
-  scale_x_continuous(breaks=c(0.00,0.25,0.35,0.50,0.75,1.00)) +
-  geom_vline(xintercept=0.35,linetype="dashed",size=1) +
-  ggtitle(paste("Distribution of assignment frequencies\n(n=",nrow(df),")"))+
-  xlab("Assignment frequency") + ylab("Density") +
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
-        axis.title.x = element_text(color="black", size=24),
-        axis.title.y = element_text(color="black", size=24),
-        axis.text=element_text(size=24, colour="black"),
-        legend.key = element_rect(fill = "white", size = 1),
-        legend.key.height = unit(2,"line"),
-        legend.key.width = unit(5,"line"),
-        legend.text=element_text(size=30),
-        legend.title=element_text(size=30))
+# #-------------------------------#
+# #   DESCRIPTION DES RESULTATS
+# #   A PARTIR DE N RUNS DE COLONY
+# #-------------------------------
+# descResults=describeResults(Paternities)
+# write.table(descResults,paste(Rdir,"AssignationThu/resultsWithInfo.txt",sep=""),col.name=TRUE,row.names=FALSE)
+# 
+# length(unique(descResults$offspring)) # nombre de juveniles
+# length(unique(descResults$father)) # nombre de peres
+# 
+# # Distribution du nombre d'occurence de chaque couple offsprings-fathers
+# distBestF=distBestFather(path="Colony79lociSansM399/")
+# # OR
+# distBestF=distBestFather(path="Colony99loci/")
+# 
+# # PLOT : Distribution du nombre d'occurence de chaque couple offsprings-fathers
+# # en fonction de la distribution attendue d'apres les simulations
+# distSim=read.table(paste(Rdir,"Assignation/04_data/outputs/occurencesBestFather.txt",sep=""),header=TRUE)
+# # OR
+# distSim=read.table(paste(Rdir,"Assignation/04_data/outputs/occurencesBestFatherIncompleteGen.txt",sep=""),header=TRUE)
+# 
+# 
+# # PLOT
+# df=data.frame(occurence=distBestF$occurences/nrun)
+# dfSim=data.frame(occurence=distSim$occurence[which(distSim$runs==29)])
+# 
+# hist(df$occurence,freq=FALSE,ylim=c(0,8))
+# lines(density(as.numeric(unlist(df)),na.rm=TRUE))
+# lines(density(as.numeric(unlist(dfSim))))
+# 
+# nrun=30
+# 
+# ggplot(data=df, aes(x=occurence)) +
+#   geom_histogram(aes(y=..density..),binwidth=0.1,fill="grey",color="black") +
+#   geom_line(aes(y=..density..),fill="grey",color="black",stat="density",size=1.3) +
+#   geom_line(data=dfSim,aes(x=occurence,y=..density..),fill="grey",color="black",stat="density",size=2) +
+#   
+#   # geom_bar(aes(y=..count../457),fill="grey",color="black") +
+#   # geom_line(data=dfSim,aes(x=occurence,y=..density../200),size=1.3,stat='density') +
+#   xlim(0,1) +
+#   scale_x_continuous(breaks=c(0.00,0.25,0.35,0.50,0.75,1.00)) +
+#   geom_vline(xintercept=0.35,linetype="dashed",size=1) +
+#   ggtitle(paste("Distribution of assignment frequencies\n(n=",nrow(df),")"))+
+#   xlab("Assignment frequency") + ylab("Density") +
+#   theme(axis.line = element_line(colour = "black"),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         panel.border = element_blank(),
+#         panel.background = element_blank(),
+#         plot.title = element_text(color="black", size=34, face="bold.italic",hjust = 0.5),
+#         axis.title.x = element_text(color="black", size=24),
+#         axis.title.y = element_text(color="black", size=24),
+#         axis.text=element_text(size=24, colour="black"),
+#         legend.key = element_rect(fill = "white", size = 1),
+#         legend.key.height = unit(2,"line"),
+#         legend.key.width = unit(5,"line"),
+#         legend.text=element_text(size=30),
+#         legend.title=element_text(size=30))
 
 
 

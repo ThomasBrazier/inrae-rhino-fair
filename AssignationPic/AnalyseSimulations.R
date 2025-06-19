@@ -72,38 +72,38 @@ distOcc=occurenceBestF("simRandomPopIncomplete",30)
 # write.table(distOcc,file="occurencesBestFatherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
 
 # distOcc=read.table("occurencesBestFather.txt",h=T)
-# OR
-distOcc=read.table("occurencesBestFatherIncompleteGen.txt",h=T)
-
-colnames(distOcc)=c("runs","occurence","father")
-dfT=distOcc[which(distOcc$father==TRUE),1:2]
-dfF=distOcc[which(distOcc$father==FALSE),1:2]
-colnames(dfT)=c("runs","occurence")
-colnames(dfF)=c("runs","occurence")
-pM=ggplot(data=dfT, aes(x=runs, y=occurence)) +
-  geom_point(colour="Black",size=1)+
-  geom_point(data=dfF,colour="darkgrey",size=1) +
-  geom_hline(yintercept=0.3,linetype="dashed",size=1) +
-  ylim(0.1,0.7) +
-  # ggtitle("Assignation frequencies of the best father\n",
-         # subtitle=paste("n=1200",sep = "")) +
-  xlab("Number of runs") + ylab("Assignment frequency") +
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-        plot.subtitle = element_text(color="black",size=14,hjust = 0.5),
-        axis.title.x = element_text(color="black", size=14),
-        axis.title.y = element_text(color="black", size=14),
-        axis.text=element_text(size=14, colour="black"),
-        legend.key = element_rect(fill = "white", size = 1),
-        #legend.key.height = unit(2,"line"),
-        #legend.key.width = unit(5,"line"),
-        legend.text=element_text(size=14),
-        legend.title=element_text(size=14))
-pM
+# # OR
+# distOcc=read.table("occurencesBestFatherIncompleteGen.txt",h=T)
+# 
+# colnames(distOcc)=c("runs","occurence","father")
+# dfT=distOcc[which(distOcc$father==TRUE),1:2]
+# dfF=distOcc[which(distOcc$father==FALSE),1:2]
+# colnames(dfT)=c("runs","occurence")
+# colnames(dfF)=c("runs","occurence")
+# pM=ggplot(data=dfT, aes(x=runs, y=occurence)) +
+#   geom_point(colour="Black",size=1)+
+#   geom_point(data=dfF,colour="darkgrey",size=1) +
+#   geom_hline(yintercept=0.3,linetype="dashed",size=1) +
+#   ylim(0.1,0.7) +
+#   # ggtitle("Assignation frequencies of the best father\n",
+#          # subtitle=paste("n=1200",sep = "")) +
+#   xlab("Number of runs") + ylab("Assignment frequency") +
+#   theme(axis.line = element_line(colour = "black"),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         panel.border = element_blank(),
+#         panel.background = element_blank(),
+#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+#         plot.subtitle = element_text(color="black",size=14,hjust = 0.5),
+#         axis.title.x = element_text(color="black", size=14),
+#         axis.title.y = element_text(color="black", size=14),
+#         axis.text=element_text(size=14, colour="black"),
+#         legend.key = element_rect(fill = "white", size = 1),
+#         #legend.key.height = unit(2,"line"),
+#         #legend.key.width = unit(5,"line"),
+#         legend.text=element_text(size=14),
+#         legend.title=element_text(size=14))
+# pM
 
 
 # To get the number of occurences of the best mother
@@ -111,44 +111,44 @@ pM
 # Pour le nombre d'occurences du meilleur pere
 # 1/ path, the path to the COLONY simulation outputs
 # 2/ number of runs
-distOcc=occurenceBestM("simRandomPop",30)
-# write.table(distOcc,file="occurencesBestMother.txt",quote=F,row.names = F,col.names = T)
-distOcc=occurenceBestM("simRandomPopIncomplete",30)
-# write.table(distOcc,file="occurencesBestMotherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
-
-distOcc=read.table("occurencesBestMotherIncompleteGen.txt",h=T)
-
-colnames(distOcc)=c("runs","occurence","father")
-dfT=distOcc[which(distOcc$father==TRUE),1:2]
-dfF=distOcc[which(distOcc$father==FALSE),1:2]
-colnames(dfT)=c("runs","occurence")
-colnames(dfF)=c("runs","occurence")
-pF=ggplot(data=dfT, aes(x=runs, y=occurence)) +
-  geom_point(colour="Black",size=1)+
-  geom_point(data=dfF,colour="darkgrey",size=1) +
-  geom_hline(yintercept=0.3,linetype="dashed",size=1) +
-  ylim(0.1,0.7) +
-  # ggtitle("Assignation frequencies of the best father\n",
-          # subtitle=paste("n=1200",sep = "")) +
-  xlab("Number of runs") + ylab("Assignment frequency") +
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-        plot.subtitle = element_text(color="black",size=14,hjust = 0.5),
-        axis.title.x = element_text(color="black", size=14),
-        axis.title.y = element_text(color="black", size=14),
-        axis.text=element_text(size=14, colour="black"),
-        legend.key = element_rect(fill = "white", size = 1),
-        #legend.key.height = unit(2,"line"),
-        #legend.key.width = unit(5,"line"),
-        legend.text=element_text(size=14),
-        legend.title=element_text(size=14))
-pF
-
-ggarrange(pM,pF,widths=1:1)
+# distOcc=occurenceBestM("simRandomPop",30)
+# # write.table(distOcc,file="occurencesBestMother.txt",quote=F,row.names = F,col.names = T)
+# distOcc=occurenceBestM("simRandomPopIncomplete",30)
+# # write.table(distOcc,file="occurencesBestMotherIncompleteGen.txt",quote=F,row.names = F,col.names = T)
+# 
+# distOcc=read.table("occurencesBestMotherIncompleteGen.txt",h=T)
+# 
+# colnames(distOcc)=c("runs","occurence","father")
+# dfT=distOcc[which(distOcc$father==TRUE),1:2]
+# dfF=distOcc[which(distOcc$father==FALSE),1:2]
+# colnames(dfT)=c("runs","occurence")
+# colnames(dfF)=c("runs","occurence")
+# pF=ggplot(data=dfT, aes(x=runs, y=occurence)) +
+#   geom_point(colour="Black",size=1)+
+#   geom_point(data=dfF,colour="darkgrey",size=1) +
+#   geom_hline(yintercept=0.3,linetype="dashed",size=1) +
+#   ylim(0.1,0.7) +
+#   # ggtitle("Assignation frequencies of the best father\n",
+#           # subtitle=paste("n=1200",sep = "")) +
+#   xlab("Number of runs") + ylab("Assignment frequency") +
+#   theme(axis.line = element_line(colour = "black"),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         panel.border = element_blank(),
+#         panel.background = element_blank(),
+#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+#         plot.subtitle = element_text(color="black",size=14,hjust = 0.5),
+#         axis.title.x = element_text(color="black", size=14),
+#         axis.title.y = element_text(color="black", size=14),
+#         axis.text=element_text(size=14, colour="black"),
+#         legend.key = element_rect(fill = "white", size = 1),
+#         #legend.key.height = unit(2,"line"),
+#         #legend.key.width = unit(5,"line"),
+#         legend.text=element_text(size=14),
+#         legend.title=element_text(size=14))
+# pF
+# 
+# ggarrange(pM,pF,widths=1:1)
 # ggsave(paste(graphdir,"/Assignation frequencies of the best father Pic79.tiff",sep=""),
 #        device="tiff",dpi=320,units="cm",width=20,height=8)
 

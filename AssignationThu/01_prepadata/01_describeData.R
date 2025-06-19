@@ -3,23 +3,18 @@
 #   Description des donnees de la BDD
 #===============================#
 
-# DIRECTORIES
-# Working directories
-# New users need to configure correct pathways
-if (Sys.info()["sysname"]=="Darwin") {
-  wd="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/01_prepadata/"
-  graphdir="/Volumes/Samsung_T5/INRA RHINO/R/Graph/"
-  Rdir="/Volumes/Samsung_T5/INRA RHINO/R/"
-  setwd(wd)
-}else {
-  if (Sys.info()["sysname"]=="Windows"){
-    wd="E:/INRA RHINO/R/AssignationThu/01_prepadata/"
-    graphdir="E:/INRA RHINO/R/Graph/"
-    Rdir="E:/INRA RHINO/R/"
-    setwd(wd)
-  }
-}
+# clear global environment: remove all variables
+rm(list=ls(all=TRUE))
+# library(rstudioapi)
+# Get the directory of the file & set working directory
+# filedir=dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(filedir)
 
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("../../Sources/packages.R")
+source("fonctionsDataThu.R")
 
 
 #-------------------------------#
@@ -128,19 +123,19 @@ mean((colTot-colF)/colF)
 # pour chaque femelle, on compte le nombre de colonies presentes dans les colonnes d'echantillonnage
 
 # selection des ech. de femelles, juveniles et adultes ensemble
-femalesSampled=genotypes[which(genotypes$sexe=="F" & genotypes$idcol!="P412"),24:31]
-# compte les colonies ind. par ind.
-for (i in 1:nrow(femalesSampled)) {
-  colSamp=c(as.character(femalesSampled[i,1]),
-            as.character(femalesSampled[i,2]),
-            as.character(femalesSampled[i,3]),
-            as.character(femalesSampled[i,4]),
-            as.character(femalesSampled[i,5]),
-            as.character(femalesSampled[i,6]),
-            as.character(femalesSampled[i,7]),
-            as.character(femalesSampled[i,8]))
-  femalesSampled$nbCol[i]=length(unique(na.omit(colSamp)))
-}
-# Indices de femelles qui ont change de colonie au moins une fois
-which(femalesSampled$nbCol>1)
-length(which(femalesSampled$nbCol>1))
+# femalesSampled=genotypes[which(genotypes$sexe=="F" & genotypes$idcol!="P412"),24:31]
+# # compte les colonies ind. par ind.
+# for (i in 1:nrow(femalesSampled)) {
+#   colSamp=c(as.character(femalesSampled[i,1]),
+#             as.character(femalesSampled[i,2]),
+#             as.character(femalesSampled[i,3]),
+#             as.character(femalesSampled[i,4]),
+#             as.character(femalesSampled[i,5]),
+#             as.character(femalesSampled[i,6]),
+#             as.character(femalesSampled[i,7]),
+#             as.character(femalesSampled[i,8]))
+#   femalesSampled$nbCol[i]=length(unique(na.omit(colSamp)))
+# }
+# # Indices de femelles qui ont change de colonie au moins une fois
+# which(femalesSampled$nbCol>1)
+# length(which(femalesSampled$nbCol>1))

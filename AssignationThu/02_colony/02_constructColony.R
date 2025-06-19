@@ -6,37 +6,29 @@
 #===============================#
 
 
-# D'apres un script fourni par Pierre-Loup JAN
+# clear global environment: remove all variables
+rm(list=ls(all=TRUE))
+# library(rstudioapi)
+# Get the directory of the file & set working directory
+# filedir=dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(filedir)
 
-# DIRECTORIES
-
-if (Sys.info()["sysname"]=="Darwin") {
-  wd="/Volumes/Samsung_T5/INRA RHINO/R/AssignationThu/02_colony/"
-  graphdir="/Volumes/Samsung_T5/INRA RHINO/R/Graph/"
-  Rdir="/Volumes/Samsung_T5/INRA RHINO/R/"
-  setwd(wd)
-  source(paste(wd,"fonctionPrepaColony.R",sep=""))
-  source(paste(wd,"fonctionExcluded.R",sep=""))
-}else {
-  if (Sys.info()["sysname"]=="Windows"){
-    wd="E:/INRA RHINO/R/AssignationThu/02_colony/"
-    graphdir="E:/INRA RHINO/R/Graph/"
-    Rdir="E:/INRA RHINO/R/"
-    setwd(wd)
-    source(paste(wd,"fonctionPrepaColony.R",sep=""))
-    source(paste(wd,"fonctionExcluded.R",sep=""))
-  }
-}
+#----------------------------------------------------------#
+# Loading packages
+# Check if packages are installed, install if necessary
+source("../../Sources/packages.R")
+source("fonctionPrepaColony.R")
+source("fonctionExcluded.R")
 
 
-
+unique=read.table("../uniqueGenotypesWithInfo.txt",h=T)
 
 #-----------------------#
 #       A executer
 #-----------------------#
 # Effacer les anciens fichiers
-nettoyage=c("Rhino_OFS.txt","Rhino_CMS.txt","Rhino_CFS.txt","Rhino_ExcludedMothers.txt","Rhino_ExcludedFathers.txt","Rhino_ExcludedMaternalSibs.txt")
-file.remove(paste(wd,nettoyage,sep=""))
+# nettoyage=c("Rhino_OFS.txt","Rhino_CMS.txt","Rhino_CFS.txt","Rhino_ExcludedMothers.txt","Rhino_ExcludedFathers.txt","Rhino_ExcludedMaternalSibs.txt")
+# file.remove(paste(nettoyage,sep=""))
 
 prepaColony() # prepare les fichiers OFS, CMS et CFS
 excluded() # prepare fichiers d'exclusion
