@@ -199,7 +199,7 @@ wilcox.test(PopAssignPic$probancestry[PopAssignPic$nataldisp == TRUE], PopAssign
 dir.create("Tables")
 # write.table(PopAssignPic, "Tables/MigrantFathersPic.txt", col.names = TRUE, row.names = FALSE,
 #             quote = FALSE)
-PopAssignPic = read.table("Tables_supp/MigrantFathersPic.txt", header = TRUE)
+# PopAssignPic = read.table("Tables_supp/MigrantFathersPic.txt", header = TRUE)
 
 
 
@@ -344,7 +344,7 @@ wilcox.test(PopAssignThu$probancestry[PopAssignThu$nataldisp == TRUE], PopAssign
 # Export results
 # write.table(PopAssignThu, "Tables/MigrantFathersThu.txt", col.names = TRUE, row.names = FALSE,
 #             quote = FALSE)
-PopAssignThu = read.table("Tables_supp/MigrantFathersThu.txt", header = TRUE)
+# PopAssignThu = read.table("Tables_supp/MigrantFathersThu.txt", header = TRUE)
 
 
 
@@ -444,12 +444,33 @@ res_pic_summary %>%
 
 
 # FIGURES
-ggplot(res_pic, aes(x = proba_col_origin, colour = run)) +
+figs4a = ggplot(res_pic, aes(x = proba_col_origin, colour = run)) +
   geom_density() +
-  geom_vline(data = res_pic_sampled_summary, aes(xintercept = mean_proba), linetype =  "dashed") +
+  geom_vline(data = res_pic_sampled_summary, aes(xintercept = mean_proba), linetype =  "dashed", alpha = 0.4) +
   geom_density(data = res_pic_summary, aes(x = mean_proba, colour = "Black"), colour = "Black") +
-  theme_bw()
+  xlab("Assignment probability") +
+  ylab("Density") +
+  labs(colour = "Run") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(1.5,"line"),
+        legend.key.width = unit(1.5,"line"),
+        legend.text=element_text(size=14),
+        legend.title=element_text(size=14, face = "bold"),
+        legend.position = "none")
+figs4a
 
+
+dir.create("Figures_R1")
+ggsave("Figures_R1/Probability_assignment_per_run_Pic.jpeg", width = 8, height = 5)
 
 #--------------------------------------------------#
 # THURINGIA ----
@@ -535,17 +556,43 @@ res_thu_summary %>%
 
 
 # FIGURES
-ggplot(res_thu, aes(x = proba_col_origin, colour = run)) +
+figs4b = ggplot(res_thu, aes(x = proba_col_origin, colour = run)) +
   geom_density() +
   geom_vline(data = res_thu_sampled_summary, aes(xintercept = mean_proba),
              linetype =  "dashed",
              alpha = 0.4) +
   geom_density(data = res_thu_summary, aes(x = mean_proba, colour = "Black"),
                colour = "Black") +
-  theme_bw()
+  xlab("Assignment probability") +
+  ylab("Density") +
+  labs(colour = "Run") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=14),
+        legend.title=element_text(size=14, face = "bold"),
+        legend.position = "right")
+
+figs4b
+
+ggsave("Figures_R1/Probability_assignment_per_run_Thu.jpeg", width = 8, height = 5)
 
 
+# Fig S4 ----
+ggpubr::ggarrange(figs4a, figs4b,
+                  ncol = 2,
+                  widths = c(2, 2.5))
 
+ggsave("Figures_R1/FigS4.jpeg", width = 15, height = 5)
 
 
 #=================================================#
@@ -590,24 +637,92 @@ res_five_best$proba_rank = as.factor(res_five_best$proba_rank)
 res_five_best$natal_disperser = (res_five_best$idcol != res_five_best$col_origin)
 
 # FIGURES
-ggplot(res_five_best, aes(x = proba_col_origin, colour = proba_rank)) +
-  geom_density() +
+fig3a = ggplot(res_five_best, aes(x = proba_col_origin, colour = proba_rank)) +
   geom_vline(data = res_pic_sampled_summary, aes(xintercept = mean_proba),
              linetype =  "dashed",
              alpha = 0.4) +
+  geom_density() +
+  xlab("Assignment probability") +
+  ylab("Density") +
+  labs(colour = "Probability\nRank") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
   # geom_density(data = res_pic_summary, aes(x = mean_proba, colour = "Black"), colour = "Black") +
-  theme_bw()
+  # theme_bw()
+
+fig3a
+
+fig3a = ggplot(res_five_best, aes(x = proba_rank, y = proba_col_origin, fill = proba_rank)) +
+  geom_violin(width = 1) +
+  geom_boxplot(width=0.2, fill = "white", alpha=0.2) +
+  geom_hline(data = res_pic_sampled_summary, aes(yintercept = mean_proba),
+             linetype =  "dashed",
+             alpha = 0.2) +
+  xlab("Probability rank") +
+  ylab("Assignment probability") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+fig3a
+
+ggsave("Figures_R1/Probability_assignment_rank_best_run_Pic.jpeg", width = 8, height = 5)
 
 
 # TODO Dist of mean proba per rank: 1, 2, 3...
 # The decay in proba for sampled fathers, showing power to discriminate the best colony
-ggplot(res_five_best %>% filter(idind %in% individuals), aes(y = proba_col_origin, fill = proba_rank, x = as.factor(idind))) +
+figs3a = ggplot(res_five_best %>% filter(idind %in% individuals), aes(y = proba_col_origin, fill = proba_rank, x = as.factor(idind))) +
   geom_col(position = "dodge")+
-  theme_bw() +
-  theme(legend.position = "none")
+  theme_bw()  +
+  ylab("Assignment\nprobability") +
+  xlab("Father ID") +
+  labs(fill = "Probability\nrank") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=10, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=10),
+        axis.title.y = element_text(color="black", size=10),
+        axis.text=element_text(size=10, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(1.5,"line"),
+        legend.key.width = unit(1.5,"line"),
+        legend.text=element_text(size=6),
+        legend.title=element_text(size=6, face = "bold"),
+        legend.position = "right")
+
+figs3a
+ggsave("Figures_R1/Probability_assignment_rank_per_individual_Pic.jpeg", width = 8, height = 5)
 
 
-# TODO Barplot of natal dispersal rate, for each rank of proba: first, second, third... up to six
+# Barplot of natal dispersal rate, for each rank of proba: first, second, third... up to six ----
 # See how informative AND conservative (or not) we are
 res_five_best_summary = res_five_best %>%
   group_by(proba_rank) %>%
@@ -626,13 +741,92 @@ res_sampled_five_best_summary = res_five_best %>%
 
 
 
-ggplot(res_five_best_summary, aes(y = natal_dispersal_rate, x = proba_rank)) +
+figs2a = ggplot(res_five_best_summary, aes(y = natal_dispersal_rate, x = proba_rank)) +
   geom_col(position = "dodge")+
   theme_bw() +
   geom_hline(aes(yintercept = 1 - (1 / length(unique(colonynamesPic))))) +
   geom_hline(aes(yintercept = res_sampled_five_best_summary$natal_dispersal_rate[1]), linetype = "dashed") +
-  ylim(0, 1) +
-  theme(legend.position = "none")
+  ylim(0, 1)  +
+  xlab("Probability rank") +
+  ylab("Natal dispersal rate") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+figs2a
+ggsave("Figures_R1/Natal_dispersal_rate_per_rank_Pic.jpeg", width = 8, height = 5)
+
+
+
+# Barplot of natal dispersal rate for bins of proba of assignment ----
+res$col_inferred = NA
+col_names = colnames(res)[3:19]
+
+for (i in 1:nrow(res)) {
+  res$col_inferred[i] = col_names[res$col_origin[i]]
+}
+
+res$natal_disperser = (res$idcol != res$col_inferred)
+
+res$proba_bin = ifelse(res$proba_col_origin >= 0.5, "p > 0.5",
+                       ifelse(res$proba_col_origin >= 0.25 & res$proba_col_origin < 0.5, "0.25 < p < 0.5", 
+                              ifelse(res$proba_col_origin >= 0.1 & res$proba_col_origin < 0.25, "0.1 < p < 0.25", "p < 0.1")))
+
+
+
+res_bin_proba_summary = res %>%
+  group_by(proba_bin) %>%
+  summarise(natal_dispersal_events = sum(natal_disperser),
+            n = n(),
+            natal_dispersal_rate = natal_dispersal_events / n)
+
+res_bin_proba_summary$proba_bin = factor(res_bin_proba_summary$proba_bin,
+                       levels = c("p < 0.1",
+                                  "0.1 < p < 0.25",
+                                  "0.25 < p < 0.5"))
+
+figs2c = ggplot(res_bin_proba_summary, aes(y = natal_dispersal_rate, x = proba_bin)) +
+  geom_col(position = "dodge")+
+  theme_bw() +
+  geom_hline(aes(yintercept = 1 - (1 / length(unique(colonynamesPic))))) +
+  geom_hline(aes(yintercept = res_sampled_five_best_summary$natal_dispersal_rate[1]), linetype = "dashed") +
+  ylim(0, 1)  +
+  xlab("Probability bin") +
+  ylab("Natal dispersal rate") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+
+figs2c
+ggsave("Figures_R1/Natal_dispersal_rate_per_proba_bin_Pic.jpeg", width = 8, height = 5)
+
+
+
 
 # Save sampled fathers for the dispersal kernel
 df = res_five_best %>%
@@ -703,22 +897,103 @@ res_five_best$proba_rank = as.factor(res_five_best$proba_rank)
 res_five_best$natal_disperser = (res_five_best$idcol != res_five_best$col_origin)
 
 # FIGURES
-ggplot(res_five_best, aes(x = proba_col_origin, colour = proba_rank)) +
-  geom_density() +
+fig3b = ggplot(res_five_best, aes(x = proba_col_origin, colour = proba_rank)) +
   geom_vline(data = res_thu_sampled_summary, aes(xintercept = mean_proba),
              linetype =  "dashed",
              alpha = 0.4) +
+  geom_density() +
+  xlab("Assignment probability") +
+  ylab("Density") +
+  labs(colour = "Probability\nRank") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"))
   # geom_density(data = res_pic_summary, aes(x = mean_proba, colour = "Black"), colour = "Black") +
-  theme_bw()
+  # theme_bw()
+
+
+fig3b = ggplot(res_five_best, aes(x = proba_rank, y = proba_col_origin, fill = proba_rank)) +
+  geom_violin(width = 1) +
+  geom_boxplot(width=0.2, fill = "white", alpha=0.2) +
+  geom_hline(data = res_thu_sampled_summary, aes(yintercept = mean_proba),
+             linetype =  "dashed",
+             alpha = 0.2) +
+  xlab("Probability rank") +
+  ylab("Assignment probability") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+
+fig3b
+
+ggsave("Figures_R1/Probability_assignment_rank_best_run_Thu.jpeg", width = 16, height = 10)
+
+
+
+# Fig 3 ----
+ggpubr::ggarrange(fig3a, fig3b,
+                  ncol = 2)
+
+ggsave("Figures_R1/Fig3.jpeg", width = 15, height = 5)
 
 
 # TODO Dist of mean proba per rank: 1, 2, 3...
 # The decay in proba for sampled fathers, showing power to discriminate the best colony
-ggplot(res_five_best %>% filter(idind %in% individuals),
+figs3b = ggplot(res_five_best %>% filter(idind %in% individuals),
        aes(y = proba_col_origin, fill = proba_rank, x = as.factor(idind))) +
-  geom_col(position = "dodge")+
-  theme_bw() +
-  theme(legend.position = "none")
+  geom_col(position = "dodge")  +
+  xlab("Father ID") +
+  ylab("Assignment\nprobability") +
+  labs(fill = "Probability\nrank") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=10, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=10),
+        axis.title.y = element_text(color="black", size=10),
+        axis.text=element_text(size=10, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(1.5,"line"),
+        legend.key.width = unit(1.5,"line"),
+        legend.text=element_text(size=6),
+        legend.title=element_text(size=6, face = "bold"),
+        legend.position = "right")
+
+figs3b
+ggsave("Figures_R1/Probability_assignment_rank_per_individual_Thu.jpeg", width = 8, height = 5)
+
+
+# Fig S3 ----
+ggpubr::ggarrange(figs3a, figs3b, nrow = 2)
+
+ggsave("Figures_R1/FigS3.jpeg", width = 10, height = 5)
+
 
 
 # TODO Barplot of natal dispersal rate, for each rank of proba: first, second, third... up to six
@@ -740,13 +1015,94 @@ res_sampled_five_best_summary = res_five_best %>%
 
 
 
-ggplot(res_five_best_summary, aes(y = natal_dispersal_rate, x = proba_rank)) +
+figs2b = ggplot(res_five_best_summary, aes(y = natal_dispersal_rate, x = proba_rank)) +
   geom_col(position = "dodge")+
   theme_bw() +
   geom_hline(aes(yintercept = 1 - (1 / length(unique(colonynamesThu))))) +
   geom_hline(aes(yintercept = res_sampled_five_best_summary$natal_dispersal_rate[1]), linetype = "dashed") +
-  ylim(0, 1) +
-  theme(legend.position = "none")
+  ylim(0, 1)  +
+  xlab("Probability rank") +
+  ylab("Natal dispersal rate") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+figs2b
+ggsave("Figures_R1/Natal_dispersal_rate_per_rank_Thu.jpeg", width = 8, height = 5)
+
+
+# Barplot of natal dispersal rate for bins of proba of assignment ----
+res$col_inferred = NA
+col_names = colnames(res)[3:22]
+
+for (i in 1:nrow(res)) {
+  res$col_inferred[i] = col_names[res$col_origin[i]]
+}
+
+res$natal_disperser = (res$idcol != res$col_inferred)
+
+res$proba_bin = ifelse(res$proba_col_origin >= 0.5, "p > 0.5",
+                       ifelse(res$proba_col_origin >= 0.25 & res$proba_col_origin < 0.5, "0.25 < p < 0.5", 
+                              ifelse(res$proba_col_origin >= 0.1 & res$proba_col_origin < 0.25, "0.1 < p < 0.25", "p < 0.1")))
+
+
+
+res_bin_proba_summary = res %>%
+  group_by(proba_bin) %>%
+  summarise(natal_dispersal_events = sum(natal_disperser),
+            n = n(),
+            natal_dispersal_rate = natal_dispersal_events / n)
+
+res_bin_proba_summary$proba_bin = factor(res_bin_proba_summary$proba_bin,
+                                         levels = c("p < 0.1",
+                                                    "0.1 < p < 0.25",
+                                                    "0.25 < p < 0.5",
+                                                    "p > 0.5"))
+
+figs2d = ggplot(res_bin_proba_summary, aes(y = natal_dispersal_rate, x = proba_bin)) +
+  geom_col(position = "dodge")+
+  theme_bw() +
+  geom_hline(aes(yintercept = 1 - (1 / length(unique(colonynamesPic))))) +
+  geom_hline(aes(yintercept = res_sampled_five_best_summary$natal_dispersal_rate[1]), linetype = "dashed") +
+  ylim(0, 1)  +
+  xlab("Probability rank") +
+  ylab("Natal dispersal rate") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"),
+        legend.position = "none")
+
+figs2d
+ggsave("Figures_R1/Natal_dispersal_rate_per_proba_bin_Thu.jpeg", width = 8, height = 5)
+
+
+# Fig S2 ----
+ggpubr::ggarrange(figs2a, figs2b, figs2c, figs2d, ncol = 2, nrow = 2)
+
+ggsave("Figures_R1/FigS2.jpeg", width = 16, height = 8)
 
 
 

@@ -182,7 +182,7 @@ pFThu
 ggarrange(pMPic,pMThu, widths = c(1, 1.5), labels="AUTO")
 
 # Save for publication
-ggsave("Figures/Fig1.jpeg",
+ggsave("Figures_R1/Fig1.jpeg",
        dpi=320,units="cm",width=23,height=8,
        create.dir = T)
 
@@ -345,18 +345,18 @@ pThu
 ggarrange(pPic,pThu,heights=1:1,align="v",nrow=2,labels="AUTO")
 
 # Save in png for review and jpeg for publication
-# ggsave("Figures/Fig2.png",
+# ggsave("Figures_R1/Fig2.png",
 #        device="png",dpi=320,units="cm",width=19,height=26,
 #        create.dir = T)
-ggsave("Figures/Fig2.jpeg",
+ggsave("Figures_R1/Fig2.jpeg",
        dpi=320,units="cm",width=19,height=26,
        create.dir = T)
 
 
 #==========================================================#
-# FIGURE 3. Dispersal kernel ----
+# FIGURE 4. Dispersal kernel ----
 #==========================================================#
-# Figure 3. Competing models of gametic dispersal kernels fitted on strictly positive dispersal distances in Picardy (a) and Thuringia (b).
+# Figure 4. Competing models of gametic dispersal kernels fitted on strictly positive dispersal distances in Picardy (a) and Thuringia (b).
 # Histograms show densities of empirical gametic dispersal distances (i.e. natal + mating dispersal).
 # In each case, the selected model is in solid line and rejected models are in dashed lines.
 
@@ -571,6 +571,9 @@ ggplot(data=dyadsObsSelect %>%
         legend.text=element_text(size=10),
         legend.title=element_text(size=10, face = "bold"))
 
+
+ggsave("Figures_R1/Gametic_dispersal_with_uncertainty_Pic.jpeg", width = 8, height = 5)
+
 # Considerable uncertainty
 # TODO Other strategy?:
 # Bootstrap -> for each offspring, resample 1,000 times a dist across the five best proba, weighting by proba of assignment
@@ -578,7 +581,7 @@ ggplot(data=dyadsObsSelect %>%
 
 
 #------------------------------------------#
-# Bootstrap the mean, min and max distances?
+# Bootstrap the mean, min and max distances? ----
 #------------------------------------------#
 res_all_probas = read_tsv("R1_supp_analyses/Pic_fathers_natal_colony_all_probas.tsv")
 
@@ -596,6 +599,9 @@ dyadsObsSelect$lower_dist = NA
 dyadsObsSelect$upper_dist = NA
 
 colony_names = colnames(res_all_probas)[3:19]
+
+# res_all_probas =res_all_probas %>%
+#   filter(proba_rank <= 5)
 
 for (i in 1:nrow(dyadsObsSelect)) {
   # Get probas of each putative natal colony for the father
@@ -631,6 +637,8 @@ ggplot(dyadsObsSelect, aes(x = gametic_dispersal, y = mean_dist)) +
 ggplot(dyadsObsSelect, aes(x = mean_dist)) +
   geom_histogram()
 
+ggplot(dyadsObsSelect, aes(x = median_dist)) +
+  geom_histogram()
 
 
 fit.weibull.bootstap = fitdist(data=dyadsObsSelect$mean_dist[dyadsObsSelect$mean_dist > 0],distr="weibull",method="mle",lower = c(0, 0),
@@ -646,17 +654,119 @@ mean(gametic_distances_summary$max_dist)
 mean(dyadsObsSelect$mean_dist)
 
 
-ggplot(data=dyadsObsSelect %>%
+(p = ggplot(data=dyadsObsSelect %>%
          filter(gametic_dispersal > 0), aes(x=gametic_dispersal)) +
   geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
   ylim(0,0.07) +
   xlim(0,100) +
   stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
   # stat_function(fun = weibullfit_best, color = "purple", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_min, color = "blue", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_max, color = "red", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_bootstrap, color = "green", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_min, color = "blue", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_max, color = "red", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_bootstrap, color = "green", linetype = "dashed", size = linesize) +
+  # stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
+  # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
+  # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
+  xlab("Geographic distance (km)") + ylab("Density") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold")))
+
+
+# Uncertainty is very large with this approach
+# But the mean estimate integrate the uncertainty in a model averaging approach
+# Finally give a similar estimate of the mean gametic dispersal distance
+
+
+# Kernel for each proba rank ----
+# Draw the kernel for each proba rank in STRUCTURE, from the best to worst proba assignment
+
+fit_weibull = data.frame(proba_rank = 1:max(res_all_probas$proba_rank),
+                         estimate_1 = numeric(max(res_all_probas$proba_rank)),
+                         estimate_2 = numeric(max(res_all_probas$proba_rank)))
+pal = viridisLite::viridis(max(res_all_probas$proba_rank), alpha = 1, begin = 0, end = 1, direction = 1, option = "D")
+
+
+for (i in 1:max(res_all_probas$proba_rank)) {
+  
+  dyadsObsSelect$estimated_colony = NA
+  
+  distances = numeric(nrow(dyadsObsSelect))
+  
+  for (j in 1:nrow(dyadsObsSelect)) {
+    
+    father = dyadsObsSelect$fatherID[j]
+    colony_name = as.character(res_all_probas$col_origin[which(res_all_probas$idind == father & res_all_probas$proba_rank == i)])
+    
+    distances[j] = distCosine(as.matrix(cbind(coordCol$Long[which(coordCol$Colony == as.character(dyadsObsSelect$offspring[j]))],
+                                              coordCol$Lat[which(coordCol$Colony == as.character(dyadsObsSelect$offspring[j]))])),
+                              as.matrix(cbind(coordCol$Long[which(coordCol$Colony == as.character(colony_name))],
+                                              coordCol$Lat[which(coordCol$Colony == as.character(colony_name))])),
+                              r=6378137)/1000
+  }
+  
+  fit.wl = fitdist(data=distances[distances > 0],
+                   distr="weibull",
+                   method="mle",
+                   lower = c(0, 0),
+                   start = list(shape = 1, scale = 1))
+  fit_weibull$estimate_1[i] = fit.wl$estimate[1]
+  fit_weibull$estimate_2[i] = fit.wl$estimate[2]
+  wfit = dweibull(1:100, fit.wl$estimate[1], fit.wl$estimate[2])
+  
+  # list_kernels[i] = function( z ){dweibull(z, fit.weibull.bootstap$estimate[1], fit.weibull.bootstap$estimate[2])}
+  
+  # (p = p +
+  #     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[i], fit_weibull$estimate_2[i])}, color = pal[i], alpha = 0.5, size = linesize))
+  if (i == 1) {
+    fit_weibull_lines = data.frame(x = 1:100,
+                                   y = wfit,
+                                   proba_rank = i)
+  } else {
+    df = data.frame(x = 1:100,
+                    y = wfit,
+                    proba_rank = i)
+    fit_weibull_lines = bind_rows(fit_weibull_lines, df)
+  }
+}
+
+figS6a = p +
+  geom_line(data = fit_weibull_lines, aes(x = x, y = y,
+                                          group = as.factor(proba_rank),
+                                          colour = as.numeric(proba_rank),
+                                          fill = as.numeric(proba_rank)),
+            alpha = 0.5, size = linesize) +
+  labs(colour = "Assignment\nprobability\nrank") +
+  scale_color_viridis_c() +
+  scale_fill_viridis_c()
+
+figS6a
+
+ggsave("Figures_R1/Gametic_dispersal_all_probas_Pic.jpeg", width = 10, height = 5)
+
+
+# Dispersal Kernel (PDF)
+df = data.frame(d = dyadsObsSelect$distance[dyadsObsSelect$distance > 0])
+df = data.frame(d = distPic$d[distPic$d > 0])
+
+histPic = ggplot(data=df, aes(x=d)) +
+  geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
+  stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
   stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
+  # geom_density(color="black", size = 1) +
+  ylim(0,0.07) +
+  xlim(0,100) +
   # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
   # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
   xlab("Geographic distance (km)") + ylab("Density") +
@@ -674,42 +784,7 @@ ggplot(data=dyadsObsSelect %>%
         legend.key.width = unit(2,"line"),
         legend.text=element_text(size=10),
         legend.title=element_text(size=10, face = "bold"))
-
-
-# Uncertainty is very large with this approach
-# But the mean estimate integrate the uncertainty in a model averaging approach
-# Finally give a similar estimate of the mean gametic dispersal distance
-
-
-# Dispersal Kernel (PDF)
-# df = data.frame(d = dyadsObsSelect$distance[dyadsObsSelect$distance > 0])
-# df = data.frame(d = distPic$d[distPic$d > 0])
-# 
-# histPic = ggplot(data=df, aes(x=d)) +
-#   geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
-#   stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
-#   stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
-#   # geom_density(color="black", size = 1) +
-#   ylim(0,0.07) +
-#   xlim(0,100) +
-#   # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
-#   # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
-#   xlab("Geographic distance (km)") + ylab("Density") +
-#   theme(axis.line = element_line(colour = "black"),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         panel.border = element_blank(),
-#         panel.background = element_blank(),
-#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-#         axis.title.x = element_text(color="black", size=14),
-#         axis.title.y = element_text(color="black", size=14),
-#         axis.text=element_text(size=14, colour="black"),
-#         legend.key = element_rect(fill = "white", size = 1),
-#         legend.key.height = unit(2,"line"),
-#         legend.key.width = unit(2,"line"),
-#         legend.text=element_text(size=10),
-#         legend.title=element_text(size=10, face = "bold"))
-# histPic
+histPic
 
 #-----------------------------#
 # ThuAll ----
@@ -909,10 +984,13 @@ ggplot(data=dyadsObsSelect %>%
         legend.text=element_text(size=10),
         legend.title=element_text(size=10, face = "bold"))
 
+ggsave("Figures_R1/Gametic_dispersal_with_uncertainty_Thu.jpeg", width = 8, height = 5)
+
+
 
 
 #------------------------------------------#
-# Bootstrap the mean, min and max distances?
+# Bootstrap the mean, min and max distances? ----
 #------------------------------------------#
 res_all_probas = read_tsv("R1_supp_analyses/Thu_fathers_natal_colony_all_probas.tsv")
 
@@ -931,11 +1009,15 @@ dyadsObsSelect$upper_dist = NA
 
 colony_names = colnames(res_all_probas)[3:22]
 
+# res_all_probas =res_all_probas %>%
+#   filter(proba_rank <= 5)
+
+
 for (i in 1:nrow(dyadsObsSelect)) {
   # Get probas of each putative natal colony for the father
   probs = res_all_probas$proba_col_origin[which(res_all_probas$idind == dyadsObsSelect$fatherID[i])]
   # Sample 1,000 idx of colony to draw
-  col_idx = sample(1:length(probs), 1000, replace = T, prob = probs)
+  col_idx = sample(1:length(probs), 1000, replace = T)
   table(col_idx)
   
   # Compute distances for each resampling
@@ -965,6 +1047,11 @@ ggplot(dyadsObsSelect, aes(x = gametic_dispersal, y = mean_dist)) +
 ggplot(dyadsObsSelect, aes(x = mean_dist)) +
   geom_histogram()
 
+mean(dyadsObsSelect$mean_dist)
+
+ggplot(dyadsObsSelect, aes(x = median_dist)) +
+  geom_histogram()
+
 
 
 fit.weibull.bootstap = fitdist(data=dyadsObsSelect$mean_dist[dyadsObsSelect$mean_dist > 0],distr="weibull",method="mle",lower = c(0, 0),
@@ -980,17 +1067,17 @@ mean(gametic_distances_summary$max_dist)
 mean(dyadsObsSelect$mean_dist)
 
 
-ggplot(data=dyadsObsSelect %>%
+(p = ggplot(data=dyadsObsSelect %>%
          filter(gametic_dispersal > 0), aes(x=gametic_dispersal)) +
   geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
   ylim(0,0.07) +
   xlim(0,100) +
   stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
   # stat_function(fun = weibullfit_best, color = "purple", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_min, color = "blue", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_max, color = "red", linetype = "dashed", size = linesize) +
-  stat_function(fun = weibullfit_bootstrap, color = "green", linetype = "dashed", size = linesize) +
-  stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_min, color = "blue", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_max, color = "red", linetype = "dashed", size = linesize) +
+  # stat_function(fun = weibullfit_bootstrap, color = "black", linetype = "dashed", size = linesize) +
+  # stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
   # scale_x_continuous(breaks=c(0,round(meanDispersal,digits=1),20,40,60),limits=c(0,60)) +
   # ggtitle(paste("Distribution of offspring-father distances\n(n=",nrow(df3),")"))+
   xlab("Geographic distance (km)") + ylab("Density") +
@@ -1007,7 +1094,7 @@ ggplot(data=dyadsObsSelect %>%
         legend.key.height = unit(2,"line"),
         legend.key.width = unit(2,"line"),
         legend.text=element_text(size=10),
-        legend.title=element_text(size=10, face = "bold"))
+        legend.title=element_text(size=10, face = "bold")))
 
 
 # Uncertainty is very large with this approach
@@ -1015,55 +1102,149 @@ ggplot(data=dyadsObsSelect %>%
 # For Thu it does not give a similar estimate of the mean gametic dispersal distance
 
 
-# dyadsH0=read.table("AssignationThu/outputs/dyadsH0.txt",header=TRUE)
-# dyadsObsSelect=read.table("AssignationThu/outputs/dyadsObsSelect.txt",header=TRUE)
-# icH0=read.table("AssignationThu/outputs/icH0.txt",header=TRUE)
-# 
-# ##### Fitted distribution are estimated in the Dispersal kernel directory
-# # Empirical probability density function
-# paramThuKernel = read.table("Tables/ParamThuKernel GAMETIC.txt", header = T)
-# z=seq(0,100,by=0.01)
-# 
-# # Making functions for distribution kernel
-# shape_lehnen = 1/16.77
-# expfit_lehnen = function( z ){dexp(z, shape_lehnen)}
-# weibullfit = function( z ){dweibull(z, paramThuKernel$param1[3], paramThuKernel$param2[3])}
-# 
-# # Dispersal Kernel (PDF)
-# # df = data.frame(d=dyadsObsSelect$distance[dyadsObsSelect$distance > 0])
-# df = data.frame(d=distThu$d[distThu$d > 0])
-# 
-# histThu = ggplot(data=df, aes(x=d)) +
-#   geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
-#   stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
-#   stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
-#   # geom_density(color="black", size = 1) +
-#   ylim(0,0.07) +
-#   xlim(0,100) +
-#   xlab("Geographic distance (km)") + ylab("Density") +
-#   theme(axis.line = element_line(colour = "black"),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         panel.border = element_blank(),
-#         panel.background = element_blank(),
-#         plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
-#         axis.title.x = element_text(color="black", size=14),
-#         axis.title.y = element_text(color="black", size=14),
-#         axis.text=element_text(size=14, colour="black"),
-#         legend.key = element_rect(fill = "white", size = 1),
-#         legend.key.height = unit(2,"line"),
-#         legend.key.width = unit(2,"line"),
-#         legend.text=element_text(size=10),
-#         legend.title=element_text(size=10, face = "bold"))
-# 
-# histThu
+# Kernel for each proba rank ----
+# Draw the kernel for each proba rank in STRUCTURE, from the best to worst proba assignment
+
+fit_weibull = data.frame(proba_rank = 1:20,
+                         estimate_1 = numeric(max(res_all_probas$proba_rank)),
+                         estimate_2 = numeric(max(res_all_probas$proba_rank)))
+pal = viridisLite::viridis(max(res_all_probas$proba_rank), alpha = 1, begin = 0, end = 1, direction = 1, option = "D")
+
+
+for (i in 1:max(res_all_probas$proba_rank)) {
+  
+  dyadsObsSelect$estimated_colony = NA
+  
+  distances = numeric(nrow(dyadsObsSelect))
+  
+  for (j in 1:nrow(dyadsObsSelect)) {
+    
+    father = dyadsObsSelect$fatherID[j]
+    colony_name = as.character(res_all_probas$col_origin[which(res_all_probas$idind == father & res_all_probas$proba_rank == i)])
+    
+    distances[j] = distCosine(as.matrix(cbind(coordCol$Long[which(coordCol$Colony == as.character(dyadsObsSelect$offspring[j]))],
+                                           coordCol$Lat[which(coordCol$Colony == as.character(dyadsObsSelect$offspring[j]))])),
+                           as.matrix(cbind(coordCol$Long[which(coordCol$Colony == as.character(colony_name))],
+                                           coordCol$Lat[which(coordCol$Colony == as.character(colony_name))])),
+                           r=6378137)/1000
+  }
+  
+  fit.wl = fitdist(data=distances[distances > 0],
+                                 distr="weibull",
+                                 method="mle",
+                                 lower = c(0, 0),
+                                 start = list(shape = 1, scale = 1))
+  fit_weibull$estimate_1[i] = fit.wl$estimate[1]
+  fit_weibull$estimate_2[i] = fit.wl$estimate[2]
+  wfit = dweibull(1:100, fit.wl$estimate[1], fit.wl$estimate[2])
+  
+  # list_kernels[i] = function( z ){dweibull(z, fit.weibull.bootstap$estimate[1], fit.weibull.bootstap$estimate[2])}
+  
+  # (p = p +
+  #     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[i], fit_weibull$estimate_2[i])}, color = pal[i], alpha = 0.5, size = linesize))
+  if (i == 1) {
+    fit_weibull_lines = data.frame(x = 1:100,
+                                   y = wfit,
+                                   proba_rank = i)
+  } else {
+    df = data.frame(x = 1:100,
+                    y = wfit,
+                    proba_rank = i)
+    fit_weibull_lines = bind_rows(fit_weibull_lines, df)
+  }
+}
+
+figS6b = p +
+  geom_line(data = fit_weibull_lines, aes(x = x, y = y,
+                                          group = as.factor(proba_rank),
+                                          colour = as.numeric(proba_rank),
+                                          fill = as.numeric(proba_rank)),
+                alpha = 0.5, size = linesize) +
+  labs(colour = "Assignment\nprobability\nrank") +
+  scale_color_viridis_c() +
+  scale_fill_viridis_c()
+
+figS6b
+
+ggsave("Figures_R1/Gametic_dispersal_all_probas_Thu.jpeg", width = 10, height = 5)
+
+
+
+ggpubr::ggarrange(figS6a, figS6b, nrow = 2)
+
+ggsave("Figures_R1/FigS6.jpeg", width = 10, height = 10)
+
+
+# (p = p +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[2], fit_weibull$estimate_2[2])}, color = pal[2], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[3], fit_weibull$estimate_2[3])}, color = pal[3], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[4], fit_weibull$estimate_2[4])}, color = pal[4], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[5], fit_weibull$estimate_2[5])}, color = pal[5], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[6], fit_weibull$estimate_2[6])}, color = pal[6], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[7], fit_weibull$estimate_2[7])}, color = pal[7], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[8], fit_weibull$estimate_2[8])}, color = pal[8], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[9], fit_weibull$estimate_2[9])}, color = pal[9], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[10], fit_weibull$estimate_2[10])}, color = pal[10], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[11], fit_weibull$estimate_2[11])}, color = pal[11], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[12], fit_weibull$estimate_2[12])}, color = pal[12], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[13], fit_weibull$estimate_2[13])}, color = pal[13], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[14], fit_weibull$estimate_2[14])}, color = pal[14], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[15], fit_weibull$estimate_2[15])}, color = pal[15], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[16], fit_weibull$estimate_2[16])}, color = pal[16], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[17], fit_weibull$estimate_2[17])}, color = pal[17], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[18], fit_weibull$estimate_2[18])}, color = pal[18], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[19], fit_weibull$estimate_2[19])}, color = pal[19], alpha = 0.5, size = linesize) +
+#     stat_function(fun = function( z ){dweibull(z, fit_weibull$estimate_1[20], fit_weibull$estimate_2[20])}, color = pal[20], alpha = 0.5, size = linesize))
+
+dyadsH0=read.table("AssignationThu/outputs/dyadsH0.txt",header=TRUE)
+dyadsObsSelect=read.table("AssignationThu/outputs/dyadsObsSelect.txt",header=TRUE)
+icH0=read.table("AssignationThu/outputs/icH0.txt",header=TRUE)
+
+##### Fitted distribution are estimated in the Dispersal kernel directory
+# Empirical probability density function
+paramThuKernel = read.table("Tables/ParamThuKernel GAMETIC.txt", header = T)
+z=seq(0,100,by=0.01)
+
+# Making functions for distribution kernel
+shape_lehnen = 1/16.77
+expfit_lehnen = function( z ){dexp(z, shape_lehnen)}
+weibullfit = function( z ){dweibull(z, paramThuKernel$param1[3], paramThuKernel$param2[3])}
+
+# Dispersal Kernel (PDF)
+# df = data.frame(d=dyadsObsSelect$distance[dyadsObsSelect$distance > 0])
+df = data.frame(d=distThu$d[distThu$d > 0])
+
+histThu = ggplot(data=df, aes(x=d)) +
+  geom_histogram(aes(y = ..density..), fill = "white", color = 'black', bins = 20) +
+  stat_function(fun = weibullfit, color = "black", linetype = "solid", size = linesize) +
+  stat_function(fun = expfit_lehnen, color = "black", linetype = "dashed", size = linesize) +
+  # geom_density(color="black", size = 1) +
+  ylim(0,0.07) +
+  xlim(0,100) +
+  xlab("Geographic distance (km)") + ylab("Density") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", size = 1),
+        legend.key.height = unit(2,"line"),
+        legend.key.width = unit(2,"line"),
+        legend.text=element_text(size=10),
+        legend.title=element_text(size=10, face = "bold"))
+
+histThu
 
 ggarrange(histPic,histThu,heights=1:1,align="v",nrow=1, ncol =2,labels="AUTO", common.legend = TRUE, legend = "right")
 
-ggsave("Figures/Fig3.png",
-       device="png",dpi=320,units="cm",width=26,height=10,
-       create.dir = T)
-ggsave("Figures/Fig3.jpeg",
+# ggsave("Figures_R1/Fig4.png",
+#        device="png",dpi=320,units="cm",width=26,height=10,
+#        create.dir = T)
+ggsave("Figures_R1/Fig4.jpeg",
        dpi=320,units="cm",width=26,height=10,
        create.dir = T)
 
@@ -1072,9 +1253,9 @@ ggsave("Figures/Fig3.jpeg",
 
 
 #==========================================================#
-# FIGURE S1. Dispersal kernel ----
+# FIGURE S5. Dispersal kernel ----
 #==========================================================#
-# Figure S1. Competing models of gametic dispersal kernels fitted on strictly positive dispersal distances in Picardy (a) and Thuringia (b).
+# Figure S5. Competing models of gametic dispersal kernels fitted on strictly positive dispersal distances in Picardy (a) and Thuringia (b).
 # Histograms show densities of empirical gametic dispersal distances (i.e. natal + mating dispersal).
 # In each case, the selected model is in solid line and rejected models are in dashed lines.
 #-----------------------------#
@@ -1215,10 +1396,10 @@ histThu
 
 ggarrange(histPic,histThu,heights=1:1,align="v",nrow=1, ncol =2,labels="AUTO", common.legend = TRUE, legend = "right")
 
-ggsave("Figures/FigS1.png",
-       device="png",dpi=320,units="cm",width=26,height=10,
-       create.dir = T)
-ggsave("Figures/FigS1.jpeg",
+# ggsave("Figures_R1/FigS5.png",
+#        device="png",dpi=320,units="cm",width=26,height=10,
+#        create.dir = T)
+ggsave("Figures_R1/FigS5.jpeg",
        dpi=320,units="cm",width=26,height=10,
        create.dir = T)
 
@@ -1226,7 +1407,7 @@ ggsave("Figures/FigS1.jpeg",
 
 
 #==========================================================#
-# FIGURE S2. IBD ----
+# FIGURE S7. IBD ----
 #==========================================================#
 
 #==========================================================#
@@ -1581,7 +1762,7 @@ mean.dispersal
 p = ggarrange(p1, p2, ncol = 2)
 p
 
-ggsave("Figures/FigS2.jpeg",
+ggsave("Figures_R1/FigS7.jpeg",
        dpi=320,units="cm",width=26,height=10,
        create.dir = T)
 
