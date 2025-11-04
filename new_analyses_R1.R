@@ -140,7 +140,7 @@ for (i in 1:nrow(dyadsObsSelect_Thu)) {
         legend.position = "none"))
 
 
-ggarrange(map1, map2, ncol = 2)
+ggarrange(map1, map2, ncol = 2, labels = c("A", "B"))
 
 ggsave("Figures_R1/FigS1.jpeg",width = 18, height = 8)
 
@@ -204,11 +204,11 @@ df_Pic = data.frame(dataset = "Picardy",
 
 
 # DAPC
-dapc.clust =find.clusters(matAlleles,
-                          max.n.clust = length(unique(colonies)))
-dapc1 = dapc(matAlleles, dapc.clust$grp) 
-
-scatter(dapc1)
+# dapc.clust =find.clusters(matAlleles,
+#                           max.n.clust = length(unique(colonies)))
+# dapc1 = dapc(matAlleles, dapc.clust$grp) 
+# 
+# scatter(dapc1)
 
 
 allel=read.table("Data/Thu/uniqueGenotypesWithInfo.txt",
@@ -272,11 +272,11 @@ df_Thu = data.frame(dataset = "Thuringia",
 
 
 # DAPC
-dapc.clust =find.clusters(matAlleles,
-                          max.n.clust = length(unique(colonies)))
-dapc1 = dapc(matAlleles, dapc.clust$grp) 
-
-scatter(dapc1)
+# dapc.clust =find.clusters(matAlleles,
+#                           max.n.clust = length(unique(colonies)))
+# dapc1 = dapc(matAlleles, dapc.clust$grp) 
+# 
+# scatter(dapc1)
 
 
 
@@ -583,7 +583,7 @@ ggsave("Figures_R1/FstThu.jpeg",
        create.dir = T)
 
 
-ggpubr::ggarrange(gtPic, gtThu, ncol = 2)
+ggpubr::ggarrange(gtPic, gtThu, ncol = 2, labels = c("A", "B"))
 
 ggsave("Figures_R1/FigS8.jpeg",
        width=16, height=8,

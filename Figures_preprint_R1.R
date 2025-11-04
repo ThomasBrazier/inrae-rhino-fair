@@ -743,13 +743,25 @@ for (i in 1:max(res_all_probas$proba_rank)) {
 
 figS6a = p +
   geom_line(data = fit_weibull_lines, aes(x = x, y = y,
-                                          group = as.factor(proba_rank),
-                                          colour = as.numeric(proba_rank),
-                                          fill = as.numeric(proba_rank)),
+                                          colour = as.factor(proba_rank)),
             alpha = 0.5, size = linesize) +
   labs(colour = "Assignment\nprobability\nrank") +
-  scale_color_viridis_c() +
-  scale_fill_viridis_c()
+  scale_color_viridis_d() +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(1,"line"),
+        legend.key.width = unit(1,"line"),
+        legend.text=element_text(size=8),
+        legend.title=element_text(size=8, face = "bold"),
+        legend.position = "right")
 
 figS6a
 
@@ -1156,21 +1168,34 @@ for (i in 1:max(res_all_probas$proba_rank)) {
 
 figS6b = p +
   geom_line(data = fit_weibull_lines, aes(x = x, y = y,
-                                          group = as.factor(proba_rank),
-                                          colour = as.numeric(proba_rank),
-                                          fill = as.numeric(proba_rank)),
+                                          colour = as.factor(proba_rank)),
                 alpha = 0.5, size = linesize) +
   labs(colour = "Assignment\nprobability\nrank") +
-  scale_color_viridis_c() +
-  scale_fill_viridis_c()
+  scale_color_viridis_d() +
+  theme(axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(color="black", size=14, face="bold.italic",hjust = 0.5),
+        axis.title.x = element_text(color="black", size=14),
+        axis.title.y = element_text(color="black", size=14),
+        axis.text=element_text(size=14, colour="black"),
+        legend.key = element_rect(fill = "white", colour = "white", size = 1),
+        legend.key.height = unit(1,"line"),
+        legend.key.width = unit(1,"line"),
+        legend.text=element_text(size=8),
+        legend.title=element_text(size=8, face = "bold"),
+        legend.position = "right")
+
 
 figS6b
 
 ggsave("Figures_R1/Gametic_dispersal_all_probas_Thu.jpeg", width = 10, height = 5)
 
 
-
-ggpubr::ggarrange(figS6a, figS6b, nrow = 2)
+# FIGURE S6 ----
+ggpubr::ggarrange(figS6a, figS6b, nrow = 2, labels = c("A", "B"))
 
 ggsave("Figures_R1/FigS6.jpeg", width = 10, height = 10)
 
@@ -1759,7 +1784,7 @@ mean.dispersal
 
 
 
-p = ggarrange(p1, p2, ncol = 2)
+p = ggarrange(p1, p2, ncol = 2, labels = c("A", "B"))
 p
 
 ggsave("Figures_R1/FigS7.jpeg",

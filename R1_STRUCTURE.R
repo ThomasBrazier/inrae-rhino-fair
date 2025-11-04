@@ -590,7 +590,7 @@ ggsave("Figures_R1/Probability_assignment_per_run_Thu.jpeg", width = 8, height =
 # Fig S4 ----
 ggpubr::ggarrange(figs4a, figs4b,
                   ncol = 2,
-                  widths = c(2, 2.5))
+                  widths = c(2, 2.5), labels = c("A", "B"))
 
 ggsave("Figures_R1/FigS4.jpeg", width = 15, height = 5)
 
@@ -956,7 +956,7 @@ ggsave("Figures_R1/Probability_assignment_rank_best_run_Thu.jpeg", width = 16, h
 
 # Fig 3 ----
 ggpubr::ggarrange(fig3a, fig3b,
-                  ncol = 2)
+                  ncol = 2, labels = c("A", "B"))
 
 ggsave("Figures_R1/Fig3.jpeg", width = 15, height = 5)
 
@@ -990,7 +990,7 @@ ggsave("Figures_R1/Probability_assignment_rank_per_individual_Thu.jpeg", width =
 
 
 # Fig S3 ----
-ggpubr::ggarrange(figs3a, figs3b, nrow = 2)
+ggpubr::ggarrange(figs3a, figs3b, nrow = 2, labels = c("A", "B"))
 
 ggsave("Figures_R1/FigS3.jpeg", width = 10, height = 5)
 
@@ -1077,7 +1077,7 @@ figs2d = ggplot(res_bin_proba_summary, aes(y = natal_dispersal_rate, x = proba_b
   geom_hline(aes(yintercept = 1 - (1 / length(unique(colonynamesPic))))) +
   geom_hline(aes(yintercept = res_sampled_five_best_summary$natal_dispersal_rate[1]), linetype = "dashed") +
   ylim(0, 1)  +
-  xlab("Probability rank") +
+  xlab("Probability bin") +
   ylab("Natal dispersal rate") +
   theme(axis.line = element_line(colour = "black"),
         panel.grid.major = element_blank(),
@@ -1100,7 +1100,7 @@ ggsave("Figures_R1/Natal_dispersal_rate_per_proba_bin_Thu.jpeg", width = 8, heig
 
 
 # Fig S2 ----
-ggpubr::ggarrange(figs2a, figs2b, figs2c, figs2d, ncol = 2, nrow = 2)
+ggpubr::ggarrange(figs2a, figs2b, figs2c, figs2d, ncol = 2, nrow = 2, labels = c("A", "B", "C", "D"))
 
 ggsave("Figures_R1/FigS2.jpeg", width = 16, height = 8)
 
