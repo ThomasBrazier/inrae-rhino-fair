@@ -179,15 +179,22 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
                        rhd103 = paste(allel[,16], allel[,17], sep = "/"))
 
 
+# matAlleles = df2genind(genotypes,
+#                        sep="/",
+#                        ploidy=2,
+#                        type="codom",
+#                        pop=colonies)
 
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles
 ploidy(matAlleles)
-
+matAlleles@tab
+  
 basic_stats = hierfstat::basic.stats(matAlleles)
 basic_stats$n.ind.samp
 
@@ -201,7 +208,7 @@ df_Pic = data.frame(dataset = "Picardy",
                 mean_Hs = colMeans(basic_stats$Hs),
                 mean_Fis = colMeans(basic_stats$Fis),
                 mean_allelic_richness = allrich)
-
+df_Pic$mean_Fis
 
 # DAPC
 # dapc.clust =find.clusters(matAlleles,
@@ -251,6 +258,7 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles
@@ -442,6 +450,7 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles
@@ -538,6 +547,7 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles

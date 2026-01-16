@@ -1473,6 +1473,7 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles
@@ -1645,6 +1646,7 @@ genotypes = data.frame(rha101 = paste(allel[,2], allel[,3], sep = "/"),
 matAlleles = df2genind(genotypes,
                        sep="/",
                        ploidy=2,
+                       NA.char = "0",
                        type="codom",
                        pop=colonies)
 matAlleles
