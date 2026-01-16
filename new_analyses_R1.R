@@ -208,7 +208,10 @@ df_Pic = data.frame(dataset = "Picardy",
                 mean_Hs = colMeans(basic_stats$Hs),
                 mean_Fis = colMeans(basic_stats$Fis),
                 mean_allelic_richness = allrich)
-df_Pic$mean_Fis
+
+summary(df_Pic$mean_Ho)
+summary(df_Pic$mean_allelic_richness)
+summary(df_Pic$mean_Fis)
 
 # DAPC
 # dapc.clust =find.clusters(matAlleles,
@@ -278,6 +281,9 @@ df_Thu = data.frame(dataset = "Thuringia",
                     mean_Fis = colMeans(basic_stats$Fis),
                 mean_allelic_richness = allrich)
 
+summary(df_Thu$mean_Ho)
+summary(df_Thu$mean_allelic_richness)
+summary(df_Thu$mean_Fis)
 
 # DAPC
 # dapc.clust =find.clusters(matAlleles,
