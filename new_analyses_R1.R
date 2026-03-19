@@ -83,6 +83,68 @@ summary(coordCol_Pic$Lat)
           legend.position = "none"))
 
 
+# Use a map package for scale and north arrow
+# Example
+library("ggspatial")
+library("rnaturalearth")
+library("rnaturalearthdata")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+(sites <- data.frame(longitude = c(-80.144005, -80.109), latitude = c(26.479005, 
+                                                                      26.83)))
+
+# arrow = data.frame(xstart = -80.144005,
+#                    ystart = 26.479005,
+#                    xend = -80.109,
+#                    yend = 26.83)
+# 
+# ggplot(data = world) +
+#   geom_sf() +
+#   geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
+#              shape = 23, fill = "darkred") +
+#   coord_sf(xlim = c(-88, -78), ylim = c(24.5, 33), expand = FALSE) +
+#   geom_curve(data = arrow, aes(x = xstart, y = ystart, xend = xend, yend = yend),
+#              arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+#              color = "black",
+#              alpha = 0.5,
+#              size = 0.5,
+#              curvature = -0.3
+#   ) +
+#   annotation_scale(location = "bl", width_hint = 0.5) +
+#   annotation_north_arrow(location = "bl", which_north = "true", 
+#                          pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+#                          style = north_arrow_fancy_orienteering)
+
+max(coordCol_Pic$Long)
+min(coordCol_Pic$Long)
+max(coordCol_Pic$Lat)
+min(coordCol_Pic$Lat)
+
+(map1 = ggplot(data = world) +
+  geom_sf() +
+  geom_point(data = coordCol_Pic, aes(x = Long, y = Lat), size = 4, 
+             shape = 23, fill = "darkred") +
+  geom_text_repel(data = coordCol_Pic, aes(label = Colony, x = Long, y = Lat),
+                  size = 3.5,
+                  box.padding = unit(0.35, "lines"),
+                  point.padding = unit(0.3, "lines")) +
+  xlab("Longitude") +
+  ylab("Latitude") +
+  coord_sf(xlim = c(2.7, 3.6), ylim = c(49.1, 49.7), expand = FALSE) +
+  geom_curve(data = dyadsObsSelect_Pic, aes(x = xstart, y = ystart, xend = xend, yend = yend),
+             arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+             color = "black",
+             alpha = 0.5,
+             size = 0.5,
+             curvature = -0.3
+  ) +
+  annotation_scale(location = "bl", width_hint = 0.5) +
+  annotation_north_arrow(location = "bl", which_north = "true", 
+                         pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+                         style = north_arrow_fancy_orienteering))
+
 
 
 coordCol_Thu = read.table("Data/Thu/coordThu.txt",h=T)
@@ -303,7 +365,8 @@ df %>%
   summarise(avg_Ho = mean(mean_Ho),
             avg_Fis = mean(mean_Fis))
 
-
+(df = df %>%
+  select(-mean_Fis))
 
 # Table S1 Sum stats ----
 write_tsv(df, "Tables_R1/Table_S1.tsv")
