@@ -1194,10 +1194,10 @@ figS6b
 ggsave("Figures_R1/Gametic_dispersal_all_probas_Thu.jpeg", width = 10, height = 5)
 
 
-# FIGURE S6 ----
+# FIGURE S5 ----
 ggpubr::ggarrange(figS6a, figS6b, nrow = 2, labels = c("A", "B"))
 
-ggsave("Figures_R1/FigS6.jpeg", width = 10, height = 10)
+ggsave("Figures_R1/FigS5.jpeg", width = 10, height = 10)
 
 
 # (p = p +
@@ -1278,7 +1278,7 @@ ggsave("Figures_R1/Fig4.jpeg",
 
 
 #==========================================================#
-# FIGURE S5. Dispersal kernel ----
+# FIGURE S4. Dispersal kernel ----
 #==========================================================#
 # Figure S5. Competing models of gametic dispersal kernels fitted on strictly positive dispersal distances in Picardy (a) and Thuringia (b).
 # Histograms show densities of empirical gametic dispersal distances (i.e. natal + mating dispersal).
@@ -1424,7 +1424,7 @@ ggarrange(histPic,histThu,heights=1:1,align="v",nrow=1, ncol =2,labels="AUTO", c
 # ggsave("Figures_R1/FigS5.png",
 #        device="png",dpi=320,units="cm",width=26,height=10,
 #        create.dir = T)
-ggsave("Figures_R1/FigS5.jpeg",
+ggsave("Figures_R1/FigS4.jpeg",
        dpi=320,units="cm",width=26,height=10,
        create.dir = T)
 
@@ -1432,7 +1432,7 @@ ggsave("Figures_R1/FigS5.jpeg",
 
 
 #==========================================================#
-# FIGURE S7. IBD ----
+# FIGURE S6. IBD ----
 #==========================================================#
 
 #==========================================================#
@@ -1789,9 +1789,10 @@ mean.dispersal
 p = ggarrange(p1, p2, ncol = 2, labels = c("A", "B"))
 p
 
-ggsave("Figures_R1/FigS7.jpeg",
+ggsave("Figures_R1/FigS6.jpeg",
        dpi=320,units="cm",width=26,height=10,
        create.dir = T)
+
 
 #==========================================================#
 # END

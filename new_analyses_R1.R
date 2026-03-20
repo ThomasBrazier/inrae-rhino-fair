@@ -25,6 +25,12 @@ dyadsObsSelect_Thu = read.table("AssignationThu/outputs/dyadsObsSelect.txt", hea
 # Figure S1 ----
 
 coordCol_Pic = read.table("Data/Pic/coordPic.txt",h=T)
+# Pic_sampling_names = read_tsv("Data/Pic/Table_S1_EP.tsv")
+# Pic_sampling_names$Colonie = Pic_sampling_names$sampling_site
+# 
+# coordCol_Pic %>%
+#   left_join(Pic_sampling_names[,c("Colonie", "zarzoso_sampling_names")])
+
 # coordCol_Pic = coordCol_Pic[-which(coordCol_Pic$Colonie=="M399" | coordCol_Pic$Colonie=="M1079" | coordCol_Pic$Colonie=="CXSGT"| coordCol_Pic$Colonie=="M1975"  | coordCol_Pic$Colonie=="M1979" | coordCol_Pic$Colonie=="P412"),]
 
 colnames(coordCol_Pic)[1] = "Colony"
@@ -92,8 +98,8 @@ library("rnaturalearthdata")
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 
-(sites <- data.frame(longitude = c(-80.144005, -80.109), latitude = c(26.479005, 
-                                                                      26.83)))
+# (sites <- data.frame(longitude = c(-80.144005, -80.109), latitude = c(26.479005, 
+#                                                                       26.83)))
 
 # arrow = data.frame(xstart = -80.144005,
 #                    ystart = 26.479005,
@@ -127,7 +133,7 @@ min(coordCol_Pic$Lat)
   geom_point(data = coordCol_Pic, aes(x = Long, y = Lat), size = 4, 
              shape = 23, fill = "darkred") +
   geom_text_repel(data = coordCol_Pic, aes(label = Colony, x = Long, y = Lat),
-                  size = 3.5,
+                  size = 5.5,
                   box.padding = unit(0.35, "lines"),
                   point.padding = unit(0.3, "lines")) +
   xlab("Longitude") +
@@ -146,6 +152,8 @@ min(coordCol_Pic$Lat)
                          style = north_arrow_fancy_orienteering))
 
 
+
+# THURINGIA MAP
 
 coordCol_Thu = read.table("Data/Thu/coordThu.txt",h=T)
 allel=read.table("Data/Thu/uniqueGenotypesWithInfo.txt",h=T)
@@ -200,6 +208,35 @@ for (i in 1:nrow(dyadsObsSelect_Thu)) {
         legend.text=element_text(size=10),
         legend.title=element_text(size=10, face = "bold"),
         legend.position = "none"))
+
+
+max(coordCol_Thu$Long)
+min(coordCol_Thu$Long)
+max(coordCol_Thu$Lat)
+min(coordCol_Thu$Lat)
+
+(map2 = ggplot(data = world) +
+    geom_sf() +
+    geom_point(data = coordCol_Thu, aes(x = Long, y = Lat), size = 4, 
+               shape = 23, fill = "darkred") +
+    geom_text_repel(data = coordCol_Thu, aes(label = Colony, x = Long, y = Lat),
+                    size = 5.5,
+                    box.padding = unit(0.35, "lines"),
+                    point.padding = unit(0.3, "lines")) +
+    xlab("Longitude") +
+    ylab("Latitude") +
+    coord_sf(xlim = c(10.1, 11.9), ylim = c(50.45, 51.6), expand = FALSE) +
+    geom_curve(data = dyadsObsSelect_Thu, aes(x = xstart, y = ystart, xend = xend, yend = yend),
+               arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+               color = "black",
+               alpha = 0.5,
+               size = 0.5,
+               curvature = -0.3
+    ) +
+    annotation_scale(location = "bl", width_hint = 0.5) +
+    annotation_north_arrow(location = "bl", which_north = "true", 
+                           pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+                           style = north_arrow_fancy_orienteering))
 
 
 ggarrange(map1, map2, ncol = 2, labels = c("A", "B"))
@@ -367,6 +404,14 @@ df %>%
 
 (df = df %>%
   select(-mean_Fis))
+
+Pic_sampling_names = read_tsv("Data/Pic/Table_S1_EP.tsv")
+
+df = df %>%
+  left_join(Pic_sampling_names[,c("sampling_site", "zarzoso_sampling_names")])
+
+
+df
 
 # Table S1 Sum stats ----
 write_tsv(df, "Tables_R1/Table_S1.tsv")
@@ -647,7 +692,7 @@ pheatmap(as.matrix(matGenDist),
          show_colnames = T)
 
 
-# Figure S8 ----
+# Figure S7 ----
 p = pheatmap(as.matrix(matGen),
              display_numbers = T,
              number_format = "%.3f",
@@ -664,6 +709,6 @@ ggsave("Figures_R1/FstThu.jpeg",
 
 ggpubr::ggarrange(gtPic, gtThu, ncol = 2, labels = c("A", "B"))
 
-ggsave("Figures_R1/FigS8.jpeg",
+ggsave("Figures_R1/FigS7.jpeg",
        width=16, height=8,
        create.dir = T)
