@@ -146,10 +146,12 @@ min(coordCol_Pic$Lat)
              size = 0.5,
              curvature = -0.3
   ) +
-  annotation_scale(location = "bl", width_hint = 0.5) +
+  annotation_scale(location = "bl", width_hint = 0.5, text_cex = 1.5) +
   annotation_north_arrow(location = "bl", which_north = "true", 
                          pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
-                         style = north_arrow_fancy_orienteering))
+                         style = north_arrow_fancy_orienteering) +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16)))
 
 
 
@@ -233,10 +235,12 @@ min(coordCol_Thu$Lat)
                size = 0.5,
                curvature = -0.3
     ) +
-    annotation_scale(location = "bl", width_hint = 0.5) +
+    annotation_scale(location = "bl", width_hint = 0.5, text_cex = 1.5) +
     annotation_north_arrow(location = "bl", which_north = "true", 
                            pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
-                           style = north_arrow_fancy_orienteering))
+                           style = north_arrow_fancy_orienteering) +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16)))
 
 
 ggarrange(map1, map2, ncol = 2, labels = c("A", "B"))
